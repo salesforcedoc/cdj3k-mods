@@ -214,12 +214,19 @@ static void output_name(const char *src, const struct mod_probe *p,
         stem[i] = '\0';
     }
 
-    /* Whatever a tag contained, what comes out has to be a usable filename:
-     * a title with a '/' in it would otherwise write into another directory. */
+    /* Whatever a tag contained, what comes out has to be a usable filename. The
+     * stick is exFAT, and a title is the deck's rather than ours -- Beatport's own
+     * titles carry ':' and '*' often enough that a save failed outright with EINVAL
+     * from open() on one. exFAT refuses these characters, so they are replaced
+     * rather than passed through: a name that cannot be created means a track that
+     * is not saved at all. `/` and the control characters were already handled;
+     * these are the rest of what FAT and exFAT reject. */
     for (i = 0; stem[i] && n + 1 < cap; i++) {
         char c = stem[i];
 
-        if (c == '/' || c == '\n' || c == '\r' || (unsigned char)c < 32)
+        if (c == '/' || c == '\\' || c == ':' || c == '*' || c == '?' ||
+            c == '"' || c == '<' || c == '>' || c == '|' ||
+            c == '\n' || c == '\r' || (unsigned char)c < 32)
             c = '_';
         out[n++] = c;
     }
@@ -692,90 +699,27 @@ static int ext_is(const char *name, const char *const *exts)
     return 0;
 }
 
-/* A track's metadata is NOT a .json file. Read off the deck's own cache, it is a
- * blob inside the Beatport client's database:
+/* A track's metadata is NOT a .json file. Read off the deck's own cache, it is the
+ * `json` column of a row in the `tracks` table inside the Beatport client's
+ * database:
  *
- *   /mnt/StreamingTemp/Beatport/BeatportClient03/812622/sqlite3.db
+ *   /mnt/StreamingTemp/Beatport/BeatportClient0N/812622/sqlite3.db
  *
- * with the per-track rows beside it under tr/<id>.trk (0 bytes each) -- so a search
- * for a .json by name finds nothing, which is exactly what the first deck run
- * showed. What identifies the record is the `"id"` it carries, so every small file
- * under the cache is scanned for it and the object is lifted out by its braces.
- * Confirmed on the deck's eMMC: each track's JSON sits inside one of these
- * SQLite files, whole, ~3 KB. */
-#define META_FILE_MAX   (8 * 1024 * 1024)   /* skip the media itself */
+ * with per-track rows beside it under tr/<id>.trk (0 bytes each) -- so a search for
+ * a .json by name finds nothing, which is what the first deck run showed. The row
+ * is found by its own id and the value read out by usbsave/sqlite.c, which walks
+ * the database the way SQLite does. That module's header says why reading the file
+ * as flat bytes does not work, and it is worth reading before changing anything
+ * here: the short version is that a value too big for its page lives on overflow
+ * pages chained by page NUMBER, so they are not next to each other in the file. */
+#define META_FILE_MAX   (8 * 1024 * 1024)   /* nothing bigger is a cache database */
 #define META_TOTAL_MAX  (48 * 1024 * 1024)  /* work for one save, all files together */
-#define META_OBJECT_MAX (32 * 1024)
-
-/* The offset of the first `"id":<id>` that is not the head of a longer number. */
-static int id_needle_at(const char *buf, size_t len, long id, size_t *out)
-{
-    char needle[32];
-    size_t nlen = (size_t)snprintf(needle, sizeof(needle), "\"id\":%ld", id);
-    size_t i;
-
-    for (i = 0; i + nlen <= len; i++) {
-        if (memcmp(buf + i, needle, nlen) != 0)
-            continue;
-        if (i + nlen < len && buf[i + nlen] >= '0' && buf[i + nlen] <= '9')
-            continue;                      /* a longer id that starts the same way */
-        *out = i;
-        return 1;
-    }
-    return 0;
-}
-
-/* The object containing that id: the nearest preceding '{' whose matching '}' comes
- * after it. The braces of objects that CLOSE before the id fail that test, so the
- * walk settles on the one enclosing it rather than on a nested field. */
-static int json_object_with_id(const char *buf, size_t len, long id,
-                               size_t *out_s, size_t *out_e)
-{
-    size_t at, i, tries;
-
-    if (!id_needle_at(buf, len, id, &at))
-        return 0;
-    for (i = at, tries = 0; i > 0 && tries < 8192; i--) {
-        size_t end;
-        long got = 0;
-
-        if (buf[i] != '{')
-            continue;
-        tries++;
-        end = mod_json_span(buf, len, i);
-        if (end == 0 || end <= at || end - i >= META_OBJECT_MAX)
-            continue;
-        /* SELF-CONSISTENCY, and the reason this is not just a brace walk: only a span
-         * whose OWN top-level id is the one searched for is the record. Arbitrary
-         * binary that happens to contain the text can balance by luck, and without
-         * this check it is accepted and reported as a hit with every field empty. */
-        if (mod_json_int(buf + i, end - i, "id", &got) != 1 || got != id)
-            continue;
-        *out_s = i;
-        *out_e = end;
-        return 1;
-    }
-    return 0;
-}
-
-/* One file's worth of that search. */
-struct meta_seek {
-    long   id;
-    size_t scanned;
-    size_t len;
-    char   json[META_OBJECT_MAX];
-    /* When nothing is found, the first file that carried the id TEXT without a
-     * record around it. Which file, and where, is the whole diagnostic: it says
-     * whether the record is in a file the walk skips, or in one it reads and cannot
-     * make sense of. */
-    char   raw_path[STEM_CACHE_PATH_MAX];
-    size_t raw_at;
-    uint32_t raw_page;      /* the page size seen for that file; 0 = not a database */
-    int    raw_seen;
-};
+#define META_OBJECT_MAX (32 * 1024)         /* the json value we will accept      */
+#define META_ROW_MAX    (48 * 1024)         /* one whole record while it decodes  */
 
 /* The deck writes the media it streams under these, and they are megabytes apiece.
- * Reading them would spend the scan's whole budget on audio it can never match. */
+ * Nothing in one can be a record, and reading them would spend the walk's whole
+ * budget on audio. */
 static int is_media_name(const char *name)
 {
     static const char *const exts[] = {
@@ -785,15 +729,23 @@ static int is_media_name(const char *name)
     return ext_is(name, exts);
 }
 
+/* The search, one save's worth. */
+struct meta_seek {
+    long    id;
+    size_t  scanned;
+    size_t  len;
+    char    json[META_OBJECT_MAX];  /* the value that was read        */
+    uint8_t row[META_ROW_MAX];      /* one whole record while it decodes */
+};
+
 static int meta_file_match(const char *path, const char *name, void *ctx)
 {
     struct meta_seek *w = ctx;
+    struct mod_sqlite_query q;
     struct stat st;
-    char *buf;
-    size_t len = 0, s, e, take;
-    uint32_t page;
+    uint8_t *buf;
+    size_t len = 0, got = 0;
 
-    (void)name;
     if (stat(path, &st) != 0 || !S_ISREG(st.st_mode))
         return 0;
     if (is_media_name(name))
@@ -802,37 +754,27 @@ static int meta_file_match(const char *path, const char *name, void *ctx)
         return 0;
     if (w->scanned + (size_t)st.st_size > META_TOTAL_MAX)
         return 0;
-    buf = read_capped(path, (size_t)st.st_size, &len);
+    buf = (uint8_t *)read_capped(path, (size_t)st.st_size, &len);
     if (!buf)
         return 0;
     w->scanned += len;
-    /* A record big enough to spill past its page is interrupted every page by that
-     * page's own header. Strip them so the JSON reads as one unbroken run -- see
-     * usbsave/sqlite.h for why that is safe to do to any page. */
-    page = mod_sqlite_page_size((const uint8_t *)buf, len);
-    if (page != 0)
-        len = mod_sqlite_deoverflow((uint8_t *)buf, len, page);
-    if (json_object_with_id(buf, len, w->id, &s, &e)) {
-        take = e - s;
-        memcpy(w->json, buf + s, take);
-        w->json[take] = '\0';
-        w->len = take;
+    /* The row this track's metadata lives in, and the lengths the reader needs
+     * because strlen is not in the mods' libc subset. */
+    q.table = "tracks";
+    q.table_len = sizeof("tracks") - 1;
+    q.id_column = "id";
+    q.id_column_len = sizeof("id") - 1;
+    q.column = "json";
+    q.column_len = sizeof("json") - 1;
+    q.id = w->id;
+    /* Only a database can answer this, and the reader refuses anything that is not
+     * one -- so there is nothing to check here first. It returns the value whole or
+     * not at all: a record it cannot read is a "no", never a partial one. */
+    if (mod_sqlite_find_text(buf, len, &q, w->row, sizeof(w->row),
+                             w->json, sizeof(w->json), &got)) {
+        w->len = got;
         free(buf);
         return 1;
-    }
-    /* Nothing usable here. But if the id's TEXT is in this file anyway, say which
-     * file and where: "not in any file the walk reads" and "in one it reads and
-     * cannot parse" need different fixes, and this is what tells them apart. The
-     * offset is into the SCANNED view, so it is post-strip for a database. */
-    if (!w->raw_seen) {
-        size_t at;
-
-        if (id_needle_at(buf, len, w->id, &at)) {
-            snprintf(w->raw_path, sizeof(w->raw_path), "%s", path);
-            w->raw_at = at;
-            w->raw_page = page;
-            w->raw_seen = 1;
-        }
     }
     free(buf);
     return 0;
@@ -924,14 +866,8 @@ static void read_cached_meta(const char *src_path, struct cached_meta *cm)
     seek.id = want;
     budget = CACHE_WALK_ENTRIES;
     if (!walk_cache(STREAM_ROOT, 0, &budget, meta_file_match, &seek, path, sizeof(path))) {
-        MDBG("usbsave: no cached metadata for id %s (%zu bytes scanned)\n",
+        MDBG("usbsave: no cached metadata for id %s (%zu bytes read)\n",
              id, seek.scanned);
-        if (seek.raw_seen)
-            MDBG("usbsave:   the id text IS in %s at offset %zu, with no record around "
-                 "it (database page size %u, %s)\n", seek.raw_path, seek.raw_at,
-                 seek.raw_page, seek.raw_page ? "stripped" : "NOT stripped");
-        else
-            MDBG("usbsave:   the id text is in no file under %s\n", STREAM_ROOT);
         return;
     }
     js = seek.json;
@@ -1031,7 +967,8 @@ static void flatten(char *dst, size_t cap, const char *src)
 
 static void report_saved(const char *file, const struct mod_probe *tagged,
                          const struct cached_meta *cm, int bpm_int,
-                         const char *key, const char *cover, int64_t took_ms)
+                         const char *key, const char *cover, int64_t took_ms,
+                         const char *status)
 {
     char line[768], tmpn[STEM_CACHE_PATH_MAX];
     char f[256], t[256], a[256], al[256], g[128], k[64], y[16], c[16];
@@ -1048,8 +985,9 @@ static void report_saved(const char *file, const struct mod_probe *tagged,
 
     snprintf(line, sizeof(line),
              "file=\"%s\" title=\"%s\" artist=\"%s\" album=\"%s\" genre=\"%s\" "
-             "year=\"%s\" key=\"%s\" bpm=%d cover=%s took=%lldms",
-             f, t, a, al, g, y, k, bpm_int, c, (long long)took_ms);
+             "year=\"%s\" key=\"%s\" bpm=%d cover=%s took=%lldms status=%s",
+             f, t, a, al, g, y, k, bpm_int, c, (long long)took_ms,
+             status ? status : "-");
     MDBG("usbsave: saved %s\n", line);
 
     /* Written whole and then renamed, so cfgd can never relay half a line. */
@@ -1383,8 +1321,30 @@ static void save_one(const char *path, const struct kit_band_meta *meta,
 
         if (stat(dest, &st) != 0)
             break;                              /* the name is free */
-        if ((int64_t)st.st_size == size + tags_payload) {
+        /* A RANGE, not an equality, because the exact size is not knowable here: what
+         * the splice adds is the tag atoms PLUS any container it has to create MINUS
+         * any field the source already carried, since mp4.c gap-fills. An equality
+         * therefore recognises our own copy only by luck, and three tracks today were
+         * written a second, third and fourth time because their own copies from
+         * minutes earlier did not match the number computed for them.
+         *
+         * The bounds are the two things that CAN be reasoned about: a copy is never
+         * smaller than the source it came from, and never larger than the source plus
+         * every tag. The slack covers the container the splice may have to build. The
+         * residual is a DIFFERENT track that generates the same name and lands inside
+         * that window, which is far narrower than the old test's failure. */
+        if ((int64_t)st.st_size >= size &&
+            (int64_t)st.st_size <= size + tags_payload + 512) {
+            const char *final = strrchr(dest, '/');
+
             MDBG("usbsave: %s already saved\n", name);
+            /* Reported, not only logged. A skipped track is still a track the DJ
+             * loaded, and a panel that says nothing about it is indistinguishable
+             * from a save that failed. The name is the one it matched, which may
+             * carry a "(2)" -- that is the file that was found, and is worth seeing. */
+            report_saved(final ? final + 1 : dest, &tagged, &cm, bpm_x100 / 100,
+                         key, cover_src, usbsave_now_ms() - seen_ms,
+                         "already-saved");
             free(art);
             return;
         }
@@ -1407,7 +1367,22 @@ static void save_one(const char *path, const struct kit_band_meta *meta,
 
         t0 = usbsave_now_ms();
         if (write_copy(path, tmp, tags, tags_n, size) != 0) {
-            MDBG("usbsave: cannot copy %s: %s\n", path, strerror(errno));
+            int e = errno;
+            char why[64];
+            const char *final = strrchr(dest, '/');
+
+            /* The name goes in the message: a copy that fails before the first byte
+             * is usually the destination being refused rather than the source being
+             * unreadable, and which of the two is only answerable if the log says
+             * what it was trying to write. */
+            MDBG("usbsave: cannot copy %s: %s (writing \"%s\")\n", path,
+                 strerror(e), name);
+            /* And the panel is told, with the reason: a save that fails silently is
+             * what made a broken filename look like the deck never loading the
+             * track. */
+            snprintf(why, sizeof(why), "failed: %s", strerror(e));
+            report_saved(final ? final + 1 : dest, &tagged, &cm, bpm_x100 / 100,
+                         key, cover_src, usbsave_now_ms() - seen_ms, why);
             free(art);
             return;
         }
@@ -1467,7 +1442,7 @@ static void save_one(const char *path, const struct kit_band_meta *meta,
             const char *final = strrchr(dest, '/');
 
             report_saved(final ? final + 1 : dest, &tagged, &cm, bpm_x100 / 100, key,
-                         cover_src, took_ms);
+                         cover_src, took_ms, "written");
         }
     }
 }

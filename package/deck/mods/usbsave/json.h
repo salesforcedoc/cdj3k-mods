@@ -64,11 +64,4 @@ int mod_json_obj_int(const char *js, size_t len, const char *outer,
 int mod_json_path_str(const char *js, size_t len, const char *const *path,
                       size_t depth, char *out, size_t cap);
 
-/* The offset just past the JSON value beginning at `start`, or 0 when it does not
- * balance. `start` must be '{' or '['. This is what lifts ONE object out of a
- * larger blob: the deck keeps a track's metadata inside its client's sqlite cache
- * rather than as a .json file, so the caller scans for the id and takes the braces
- * around it. The buffer may hold arbitrary bytes; only the object is examined. */
-size_t mod_json_span(const char *js, size_t len, size_t start);
-
 #endif /* EP122_MOD_USBSAVE_JSON_H */

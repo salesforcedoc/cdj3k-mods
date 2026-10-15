@@ -2,129 +2,188 @@
 /*
  * tests/test_sqlite.c - usbsave/sqlite.c.
  *
- * The fixture is a miniature database rather than a captured one, so every byte is
- * placed where the test says it is: a 100-byte header, then pages of a size small
- * enough (512) to lay several out on the stack, each beginning with the four header
- * bytes the real thing has. A value is then written ACROSS the pages, and the test
- * asserts that after the compaction it reads as one unbroken run -- which is the
- * whole point of the module.
+ * Against a REAL database (tests/sqlite_fixture.h, made by mk_sqlite_fixture.py)
+ * rather than a hand-built page: the thing being tested is where a value's bytes
+ * actually live, and a fixture built by hand would encode the same misunderstanding
+ * the reader might have. The second row's value is longer than its 512-byte page
+ * can hold, so it can only be returned correctly by following the overflow chain.
  */
 #include "test.h"
 
+#include "sqlite_fixture.h"
 #include "usbsave/sqlite.h"
 
-#define PS 512
-#define PAGES 3
+/* One whole record while it is decoded; the fixture's largest is ~1.5 KB. */
+static uint8_t scratch[64 * 1024];
 
-/* A page's first four bytes, as an overflow page's next-page pointer. Recognisable
- * so a test can say "these must not appear in the payload any more". */
-static const uint8_t PAGE_HDR[4] = { 0xDE, 0xAD, 0xBE, 0xEF };
+/* The names a lookup needs, with their lengths: the reader takes lengths rather
+ * than calling strlen, which is not in the mods' libc subset. At a call site these
+ * are compile-time constants. */
+#define Q(table, idcol, col, want) \
+    { table, sizeof(table) - 1, idcol, sizeof(idcol) - 1, col, sizeof(col) - 1, want }
 
-static void build_db(uint8_t *buf, size_t pages)
+static int find(long id, const char *column, char *out, size_t cap, size_t *len)
 {
-    size_t p;
+    struct mod_sqlite_query q;
 
-    memset(buf, 0, pages * PS);
-    memcpy(buf, "SQLite format 3", 16);
-    buf[16] = (uint8_t)(PS >> 8);
-    buf[17] = (uint8_t)PS;
-    for (p = 0; p < pages; p++) {
-        size_t start = p * PS + (p ? 4 : 100);   /* past the header */
-        size_t i;
-
-        for (i = start; i < (p + 1) * PS; i++)
-            buf[i] = (uint8_t)('A' + (i % 26));
-        if (p)
-            memcpy(buf + p * PS, PAGE_HDR, 4);
-    }
+    q.table = "tracks";
+    q.table_len = sizeof("tracks") - 1;
+    q.id_column = "id";
+    q.id_column_len = sizeof("id") - 1;
+    q.column = column;
+    q.column_len = strlen(column);
+    q.id = id;
+    return mod_sqlite_find_text(SQLITE_FIXTURE, SQLITE_FIXTURE_LEN, &q,
+                                scratch, sizeof(scratch), out, cap, len);
 }
 
 static void test_page_size(void)
 {
-    static uint8_t buf[PAGES * PS];
-    static uint8_t other[128];
+    static const uint8_t notdb[1024] = { 'x' };
 
     T_CASE("page size");
-    build_db(buf, PAGES);
-    CHECK_U32(mod_sqlite_page_size(buf, sizeof(buf)), PS);
-
-    /* 4096, the usual. */
-    memset(other, 0, sizeof(other));
-    memcpy(other, "SQLite format 3", 16);
-    other[16] = 0x10; other[17] = 0x00;
-    CHECK_U32(mod_sqlite_page_size(other, sizeof(other)), 4096);
-
-    /* 1 is the format's spelling of 65536, which will not fit in the field. */
-    other[16] = 0x00; other[17] = 0x01;
-    CHECK_U32(mod_sqlite_page_size(other, sizeof(other)), 65536);
-
-    T_CASE("page size: refusals");
-    other[16] = 0x0B; other[17] = 0xB8;          /* 3000: not a power of two */
-    CHECK_U32(mod_sqlite_page_size(other, sizeof(other)), 0);
-    other[16] = 0x00; other[17] = 0x00;          /* zero */
-    CHECK_U32(mod_sqlite_page_size(other, sizeof(other)), 0);
-    /* Not a database at all. */
-    memset(other, 'x', sizeof(other));
-    CHECK_U32(mod_sqlite_page_size(other, sizeof(other)), 0);
-    /* Too short to hold a header. */
-    CHECK_U32(mod_sqlite_page_size((const uint8_t *)"SQLite format 3", 15), 0);
-    CHECK_U32(mod_sqlite_page_size(NULL, 100), 0);
+    CHECK_U32(mod_sqlite_page_size(SQLITE_FIXTURE, SQLITE_FIXTURE_LEN), 512);
+    CHECK_U32(mod_sqlite_page_size(notdb, sizeof(notdb)), 0);
+    CHECK_U32(mod_sqlite_page_size(SQLITE_FIXTURE, 99), 0);
+    CHECK_U32(mod_sqlite_page_size(NULL, 1024), 0);
 }
 
-static void test_deoverflow(void)
+static void test_rows(void)
 {
-    static uint8_t buf[PAGES * PS];
-    size_t n;
+    char out[8192];
+    size_t len = 0;
 
-    T_CASE("de-overflow");
-    build_db(buf, PAGES);
+    T_CASE("every row, by id");
+    /* Row 1 fits on its page. */
+    CHECK_INT(find(1, "json", out, sizeof(out), &len), 1);
+    CHECK_STR(out, SQLITE_FIXTURE_JSON_1);
+    CHECK_INT((int)len, (int)strlen(SQLITE_FIXTURE_JSON_1));
 
-    /* Where the payload of page 1 must land, and what byte it is. */
-    n = mod_sqlite_deoverflow(buf, sizeof(buf), PS);
+    /* Row 3 also fits. */
+    CHECK_INT(find(3, "json", out, sizeof(out), &len), 1);
+    CHECK_STR(out, SQLITE_FIXTURE_JSON_3);
 
-    /* Page 0 is left whole; every later page loses its four header bytes. */
-    CHECK_INT((int)n, (int)(PS + (PS - 4) * (PAGES - 1)));
-    /* The payload now runs unbroken: page 1's first payload byte follows page 0's
-     * last, and it is the byte that was at offset PS+4 before the compaction. */
-    CHECK_U32(buf[PS], (uint8_t)('A' + ((PS + 4) % 26)));
-    /* And no page header survives anywhere in the compacted payload. */
+    T_CASE("a value that overflows its page");
+    /* Row 2 is the point of the fixture: 1.5 KB of text on a 512-byte page, so the
+     * tail of it lives on overflow pages and can only be reassembled by following
+     * the chain. Read with a buffer large enough, it must come back whole -- the
+     * comparison is the whole value, not a prefix. */
+    CHECK((size_t)strlen(SQLITE_FIXTURE_JSON_2) > 512);
+    CHECK_INT(find(2, "json", out, sizeof(out), &len), 1);
+    CHECK_INT((int)len, (int)strlen(SQLITE_FIXTURE_JSON_2));
+    CHECK_STR(out, SQLITE_FIXTURE_JSON_2);
+    /* And its tail is really there -- a reader that stopped at the page boundary
+     * would still have passed a prefix check. */
+    CHECK_STR(out + strlen(out) - 40, SQLITE_FIXTURE_JSON_2 + strlen(SQLITE_FIXTURE_JSON_2) - 40);
+    CHECK(strstr(out, "\"Casey Club\"") != NULL);
+
+    T_CASE("a column that is not the one asked for");
+    /* Row 1's artists, from the same record. */
+    CHECK_INT(find(1, "artists", out, sizeof(out), &len), 1);
+    CHECK_STR(out, "One Artist");
+}
+
+static void test_refusals(void)
+{
+    char out[8192];
+    size_t len = 0;
+
+    T_CASE("refusals");
+    /* No such row. */
+    CHECK_INT(find(99, "json", out, sizeof(out), &len), 0);
+    CHECK_INT(find(0, "json", out, sizeof(out), &len), 0);
+    CHECK_INT(find(-1, "json", out, sizeof(out), &len), 0);
+    /* No such column, and no such table. */
+    CHECK_INT(find(1, "nothing_like_this", out, sizeof(out), &len), 0);
     {
-        size_t i, found = 0;
+        struct mod_sqlite_query q = Q("nosuchtable", "id", "json", 1);
 
-        for (i = 0; i + 4 <= n; i++) {
-            if (buf[i] == PAGE_HDR[0] && buf[i + 1] == PAGE_HDR[1] &&
-                buf[i + 2] == PAGE_HDR[2] && buf[i + 3] == PAGE_HDR[3])
-                found++;
-        }
-        CHECK_INT((int)found, 0);
+        CHECK_INT(mod_sqlite_find_text(SQLITE_FIXTURE, SQLITE_FIXTURE_LEN, &q,
+                                       scratch, sizeof(scratch), out,
+                                       sizeof(out), &len), 0);
+    }
+    /* A column that is an integer, not text: bpm is 120, and a number is not a
+     * value worth handing back as a string. */
+    CHECK_INT(find(1, "bpm", out, sizeof(out), &len), 0);
+    /* A buffer that cannot hold the value: refused, not truncated. */
+    {
+        char small[16];
+
+        strcpy(small, "sentinel");
+        CHECK_INT(find(2, "json", small, sizeof(small), &len), 0);
+        CHECK_STR(small, "sentinel");
+    }
+    /* Not a database at all, and a database cut short. */
+    {
+        struct mod_sqlite_query q = Q("tracks", "id", "json", 1);
+
+        CHECK_INT(mod_sqlite_find_text((const uint8_t *)"not a database",
+                                       sizeof("not a database"), &q,
+                                       scratch, sizeof(scratch), out,
+                                       sizeof(out), &len), 0);
+        CHECK_INT(mod_sqlite_find_text(SQLITE_FIXTURE, 128, &q, scratch,
+                                       sizeof(scratch), out, sizeof(out),
+                                       &len), 0);
+        /* A scratch buffer too small for any record. */
+        CHECK_INT(mod_sqlite_find_text(SQLITE_FIXTURE, SQLITE_FIXTURE_LEN, &q,
+                                       scratch, 8, out, sizeof(out), &len), 0);
+    }
+    /* Null arguments. */
+    {
+        struct mod_sqlite_query q = Q("tracks", "id", "json", 1);
+
+        CHECK_INT(mod_sqlite_find_text(NULL, 0, &q, scratch, sizeof(scratch),
+                                       out, sizeof(out), &len), 0);
+        CHECK_INT(mod_sqlite_find_text(SQLITE_FIXTURE, SQLITE_FIXTURE_LEN, NULL,
+                                       scratch, sizeof(scratch), out,
+                                       sizeof(out), &len), 0);
     }
 }
 
-static void test_deoverflow_edges(void)
+static void test_damaged(void)
 {
-    static uint8_t buf[PAGES * PS];
-    size_t n;
+    static uint8_t copy[SQLITE_FIXTURE_LEN];
+    char out[8192];
+    size_t len = 0;
 
-    T_CASE("de-overflow: edges");
-    build_db(buf, PAGES);
-    /* A page size that is nonsense changes nothing. */
-    n = mod_sqlite_deoverflow(buf, sizeof(buf), 4);
-    CHECK_INT((int)n, (int)sizeof(buf));
-    /* A tail shorter than a whole page is still kept, and its header dropped. */
-    build_db(buf, PAGES);
-    n = mod_sqlite_deoverflow(buf, PS + 8, PS);
-    CHECK_INT((int)n, (int)(PS + 4));
-    /* One page: nothing to do. */
-    build_db(buf, PAGES);
-    n = mod_sqlite_deoverflow(buf, PS, PS);
-    CHECK_INT((int)n, (int)PS);
-    CHECK_U32(buf[100], (uint8_t)('A' + (100 % 26)));
+    T_CASE("a damaged copy");
+    /* The deck rewrites this database underneath us, so a torn read is a real
+     * possibility. Every kind of damage must be a refusal: a wrong answer here is
+     * a wrong tag on a file nobody will check until it is played. */
+    memcpy(copy, SQLITE_FIXTURE, sizeof(copy));
+    copy[16] = 0x00; copy[17] = 0x00;            /* page size zero */
+    {
+        struct mod_sqlite_query q = Q("tracks", "id", "json", 1);
+
+        CHECK_INT(mod_sqlite_find_text(copy, sizeof(copy), &q, scratch,
+                                       sizeof(scratch), out, sizeof(out),
+                                       &len), 0);
+    }
+    memcpy(copy, SQLITE_FIXTURE, sizeof(copy));
+    copy[20] = 0xff;                             /* reserved space: no usable page left */
+    {
+        struct mod_sqlite_query q = Q("tracks", "id", "json", 1);
+
+        CHECK_INT(mod_sqlite_find_text(copy, sizeof(copy), &q, scratch,
+                                       sizeof(scratch), out, sizeof(out),
+                                       &len), 0);
+    }
+    memcpy(copy, SQLITE_FIXTURE, sizeof(copy));
+    copy[100] = 0x00;                            /* page 1 is not a table page */
+    {
+        struct mod_sqlite_query q = Q("tracks", "id", "json", 1);
+
+        CHECK_INT(mod_sqlite_find_text(copy, sizeof(copy), &q, scratch,
+                                       sizeof(scratch), out, sizeof(out),
+                                       &len), 0);
+    }
 }
 
 int main(void)
 {
     test_page_size();
-    test_deoverflow();
-    test_deoverflow_edges();
+    test_rows();
+    test_refusals();
+    test_damaged();
     return t_done("sqlite");
 }

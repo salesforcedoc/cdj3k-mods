@@ -190,32 +190,6 @@ static void test_path(void)
     CHECK_STR(buf, "2020-10-29");
 }
 
-static void test_span(void)
-{
-    /* The value holds a '}' and a '{' INSIDE a string, which is the case that
-     * separates a brace walk that skips strings from one that does not. */
-    static const char DOC[] = "{\"a\":{\"b\":1},\"c\":\"}not a brace{\"}";
-
-    T_CASE("span");
-    /* From the opening brace, the span is the whole object. */
-    CHECK_INT((int)mod_json_span(DOC, sizeof(DOC) - 1, 0), (int)(sizeof(DOC) - 1));
-    /* A nested value balances on its own. */
-    CHECK_INT((int)mod_json_span(DOC, sizeof(DOC) - 1, 5), 12);
-    /* Not a value, and past the end. */
-    CHECK_INT((int)mod_json_span(DOC, sizeof(DOC) - 1, 1), 0);
-    CHECK_INT((int)mod_json_span(DOC, sizeof(DOC) - 1, 999), 0);
-    /* Unterminated. */
-    CHECK_INT((int)mod_json_span("{\"a\":1", 6, 0), 0);
-    /* An object lifted out of surrounding binary, which is how the deck's sqlite
-     * cache is read: the span ends at the matching brace and no further. */
-    {
-        static const char BLOB[] = "\x00\x11junk{\"id\":7,\"name\":\"x\"}\x7f\x00";
-        size_t s = 6, e = mod_json_span(BLOB, sizeof(BLOB) - 1, s);
-
-        CHECK_INT((int)e, 25);
-    }
-}
-
 static void test_array_join(void)
 {
     /* A track credited to three artists, the shape the deck's own cache stores as
@@ -263,6 +237,5 @@ int main(void)
     test_bounds_and_escapes();
     test_empty_and_null();
     test_path();
-    test_span();
     return t_done("json");
 }

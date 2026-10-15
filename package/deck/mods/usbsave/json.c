@@ -393,19 +393,6 @@ int mod_json_path_str(const char *js, size_t len, const char *const *path,
     return j_str_value(js, vs, ve, out, cap);
 }
 
-size_t mod_json_span(const char *js, size_t len, size_t start)
-{
-    size_t i = start;
-
-    if (!js || start >= len)
-        return 0;
-    if (js[start] != '{' && js[start] != '[')
-        return 0;
-    if (j_skip_value(js, len, &i) != 0)
-        return 0;
-    return i;
-}
-
 int mod_json_arr_join(const char *js, size_t len, const char *arr,
                       const char *key, const char *sep, char *out, size_t cap)
 {
