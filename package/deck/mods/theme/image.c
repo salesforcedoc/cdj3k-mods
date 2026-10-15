@@ -111,6 +111,11 @@ static void wrap_drawimg(void *ctx, const void *image, const void *transform)
     int has_alpha = 0;
     size_t bytes;
 
+    /* Before anything of ours touches the pixels: if this is the album art, keep a
+     * copy, because this is the only place the cover is ever reachable. Cheap when
+     * it is not artwork, and a no-op once this image has already been taken. */
+    theme_artwork_note(pd);
+
     /* Before any classification, so a buffer that is REJECTED still shows up -- "it was
      * never offered to us" and "we took it and got the geometry wrong" look identical
      * on screen and need telling apart. */

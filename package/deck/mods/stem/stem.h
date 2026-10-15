@@ -212,6 +212,16 @@ void stem_job_probe_now(void);   /* [message] */
  * worker cannot tell a re-served track from a newly opened one. */
 void stem_job_set_track(const char *path);   /* [message] */
 
+/* The path of the track loaded now, copied into `out`; empty when there is
+ * none. [message]
+ *
+ * The same string stem_job_set_track publishes, and the only way to read it
+ * without racing a load: it is written on the message thread with no lock, so a
+ * worker that read it directly could catch a half-written path and open a file
+ * that never existed. A caller that needs it off the message thread must take a
+ * copy here and carry that. */
+void stem_current_track_path(char *out, size_t cap);   /* [message] */
+
 /* Abandon whatever is in flight and drop any stems held for the old track.
  * Cooperative: the worker observes the flag at its next chunk boundary. Never
  * pthread_cancel -- that would abandon a SampleRateConverter mid-call and leak
@@ -436,6 +446,17 @@ int stem_cache_lookup(const char *track_path, int64_t frames,
 int stem_cache_store(const char *track_path, int64_t frames,
                      const char *harmonics_src, float harmonics_gain,
                      const char *vocals_src, float vocals_gain);
+
+/* Copy `src` to `dst` verbatim. Bounded chunks, EINTR-safe on both sides, fsync
+ * before it reports success, and `dst` unlinked on any failure -- a file that is
+ * visible but not yet on the medium is worse than no file, because it would be
+ * found and played short. `dst` is expected to be a temporary name the caller
+ * renames into place. The copy is assumed cross-device: no rename shortcut.
+ *
+ * Lives in cache.c, which is where moving files onto the DJ's own media already
+ * happens; USB Save uses it to put a loaded track there for the same reason --
+ * both are tmpfs-to-stick, and the track may still be growing while it is read. */
+int stem_copy_file(const char *src, const char *dst);
 
 /* ---- audio.c ---- */
 void mod_stem_audio_report(void);

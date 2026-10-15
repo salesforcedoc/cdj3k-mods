@@ -605,8 +605,13 @@ static int mkdir_p(const char *path)
     return 0;
 }
 
-/* tmpfs -> stick, which is always a cross-device copy: no rename shortcut. */
-static int copy_file(const char *src, const char *dst)
+/* tmpfs -> stick, which is always a cross-device copy: no rename shortcut.
+ *
+ * Named for the header rather than kept file-local because USB Save needs the same
+ * primitive for a different reason: it puts the loaded track itself on the stick,
+ * which is also a cross-device copy and of a file the deck may still be appending
+ * to. */
+int stem_copy_file(const char *src, const char *dst)
 {
     char *buf;
     int in, outfd, rc = -1;
@@ -673,7 +678,7 @@ static int copy_part(const char *dir, const char *stem, const char *src)
     if ((size_t)snprintf(dst, sizeof(dst), "%s/%s%s", dir, stem, ext) >=
         sizeof(dst))
         return -1;
-    return copy_file(src, dst);
+    return stem_copy_file(src, dst);
 }
 
 static void rm_rf_shallow(const char *dir)

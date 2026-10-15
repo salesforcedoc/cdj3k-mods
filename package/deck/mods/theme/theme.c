@@ -41,6 +41,7 @@
  */
 #include "theme/theme.h"
 #include "stem/stem.h"
+#include "usbsave/usbsave.h"
 #include "kit/menu.h"
 #include "kit/mod.h"
 
@@ -216,6 +217,7 @@ static void wrap_setfill(void *ctx, const void *fill)
                  tick, g_grad_seen, g_grad_ok, g_grad_sub);
             mod_stem_audio_report();
             mod_stem_decode_report();
+            mod_usbsave_pump();
             theme_memo_report();
             /* Cheap enough to sit here: eight word compares per table, and nothing
              * written unless one has gone stock. This is what carries a theme switch

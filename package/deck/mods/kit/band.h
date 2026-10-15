@@ -145,6 +145,28 @@ uintptr_t       kit_band_bar(void);     /* the title bar: a quick-menu button's 
 uintptr_t       kit_band_view(void);    /* the waveform view: the strip's parent       */
 const int32_t  *kit_band_rect(void);    /* {x,y,w,h} the stock panels share            */
 
+/* What the play screen's title bar says about the loaded track. BPM is the deck's
+ * own readout ("112.0") and key is Camelot ("10A"). There is deliberately no
+ * artist and no album: neither label exists on this bar, and for a streamed track
+ * the artist is inside the title string, so offering a field would invite a split
+ * that cannot be made. */
+struct kit_band_meta {
+    char title[128];
+    char bpm[16];
+    char key[8];
+};
+
+/* [message] Fill `out` from the title bar's labels. Returns 1 when the bar is up
+ * and a title was read, 0 otherwise. Either way every field is a valid, possibly
+ * empty, string. */
+int kit_band_read_meta(struct kit_band_meta *out);
+
+/* [message] Log every child of the title bar: class, bounds, and the text of any
+ * juce::Label among them. For finding the deck's OWN track title and artist
+ * labels, neither of which anything in the tree has ever read. Returns how many
+ * children answered as labels, or -1 while the bar is not attached yet. */
+int kit_band_dump_labels(void);
+
 /* True while one of the APP's own panels is up: it has already shrunk the
  * waveform, so ours must not shrink it again and must not restore it on the way
  * out. */

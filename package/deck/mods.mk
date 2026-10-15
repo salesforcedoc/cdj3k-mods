@@ -145,7 +145,15 @@ $(OUT)/%.o: $(MODS_DIR)/%.cc $(MODS_HDRS) | $(OUT)
 # `mods-purity` re-derives it with nm and fails on anything else.
 MODS_PURE_SRCS := $(MODS_DIR)/mods/stem/loop.c \
                   $(MODS_DIR)/mods/stem/ui/state.c \
-                  $(MODS_DIR)/mods/wave/codec.c
+                  $(MODS_DIR)/mods/wave/codec.c \
+                  $(MODS_DIR)/mods/usbsave/flac.c \
+                  $(MODS_DIR)/mods/usbsave/wav.c \
+                  $(MODS_DIR)/mods/usbsave/probe.c \
+                  $(MODS_DIR)/mods/usbsave/mp4.c \
+                  $(MODS_DIR)/mods/usbsave/json.c \
+                  $(MODS_DIR)/mods/usbsave/key.c \
+                  $(MODS_DIR)/mods/usbsave/sqlite.c \
+                  $(MODS_DIR)/mods/usbsave/png.c
 
 # mem* are emitted by the compiler for aggregate copies. The three libm calls
 # are wave/codec.c's high-band curve, built once at init.

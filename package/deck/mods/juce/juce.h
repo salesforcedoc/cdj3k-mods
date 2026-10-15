@@ -127,6 +127,15 @@ uintptr_t juce_comp_find_class(uintptr_t root, uintptr_t ti);
  * The offset is read straight out of the ctor, which builds a var from the `text`
  * argument and constructs the Value at word 0x2a. */
 #define LABEL_TEXTVALUE_OFF 0x150
+
+/* ...and the Label keeps its OWN copy of the text it last set, as a juce::String
+ * at word 0x170 (juce::Label::lastTextValue). That copy is how the text of a
+ * deck-owned Label is recovered: the Value at 0x150 is the writer's side, and a
+ * component we did not build has no Value of ours to follow to a string.
+ *
+ * Lives here rather than in a mod's private header because it is a juce::Label
+ * fact, and kit/band.c reads it as well as menu/view.c. */
+#define LABEL_LASTTEXT_OFF  0x170
 #define FN_VAR_FROM_STR     ep122_sym(EP122_JUCE_VAR_CTOR_STRING)  /* juce::var::var(const String&)     */
 #define FN_VALUE_SETVALUE   ep122_sym(EP122_JUCE_VALUE_SETVALUE)   /* juce::Value::setValue(const var&) */
 #define FN_VAR_DTOR         ep122_sym(EP122_JUCE_VAR_DTOR)         /* juce::var::~var()                 */

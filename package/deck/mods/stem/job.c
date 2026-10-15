@@ -728,6 +728,16 @@ void stem_job_set_track(const char *path)
     ui_publish(STEM_STAGE_IDLE, 0, 0);
 }
 
+void stem_current_track_path(char *out, size_t cap)
+{
+    if (!out || cap == 0)
+        return;
+    /* A copy, not a pointer: g_cur_path is rewritten in place on this same
+     * thread, so a caller holding the address would be reading it across the
+     * next load. */
+    snprintf(out, cap, "%s", g_cur_path);
+}
+
 /* Ask the sidecar what it can see, at the next idle turn rather than at the next
  * refresh.
  *

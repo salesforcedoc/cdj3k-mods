@@ -10,6 +10,8 @@
 #include "juce/juce.h"
 #include "kit/mod.h"
 
+#include <string.h>
+
 /* ---- the anchor: gui::WaveformViewTitleWidget ----------------------------
  *
  * The bar carrying the artwork, the track labels and the three quick-menu
@@ -247,6 +249,163 @@ static void band_title_squeeze(void)
     if (juce_comp_bounds(band_g_title, b) != 0 || b[2] == want) return;
     ((void (*)(void *, int, int, int, int))FN_SET_BOUNDS)
         ((void *)band_g_title, b[0], b[1], want, b[3]);
+}
+
+/* ---- the rest of what the bar is showing ------------------------------------
+ *
+ * Measured, not guessed: kit_band_dump_labels below prints every child of this
+ * bar with its class, bounds and text, and on EP122-3.19 with a streamed track
+ * loaded that reads --
+ *
+ *   [3] juce::Label {216,10,650,40}   the track title (the one found above)
+ *   [4] juce::Label {192,50,130,40}   the elapsed time
+ *   [5] juce::Label {322,50,125,40}   the BPM, as the deck displays it -- "112.0"
+ *   [6] juce::Label {447,50,85,40}    the key, Camelot -- "10A"
+ *   [1] [2] ImageComponent            the artwork thumbnails
+ *
+ * Those three right-hand tuples are the app's own layout and none of their four
+ * numbers moves, which is what makes them safe to key on. The title is the
+ * exception and is handled above: only its x, y and height are fixed, because we
+ * change its width ourselves.
+ *
+ * There is no artist label and no album label anywhere in this bar. For a
+ * streamed track the artist is inside the TITLE string -- Beatport's own naming
+ * ("Mi Chico (Official - Jason Derulo x Melody) (Original Mix)") -- so nothing
+ * here can be split into an artist field, and nothing pretends to. */
+#define KIT_BAND_BPM_X  322
+#define KIT_BAND_BPM_Y  50
+#define KIT_BAND_BPM_W  125
+#define KIT_BAND_BPM_H  40
+#define KIT_BAND_KEY_X  447
+#define KIT_BAND_KEY_Y  50
+#define KIT_BAND_KEY_W  85
+#define KIT_BAND_KEY_H  40
+
+static uintptr_t band_g_bpm;
+static uintptr_t band_g_key;
+
+/* Find the two readouts by their bounds, once. Like the title, by shape rather
+ * than by index: the child order is the app's business and has already changed
+ * once between firmware builds. */
+static void band_locate_readouts(void)
+{
+    int32_t b[4];
+    int n, i;
+
+    if (!band_g_bar || (band_g_bpm && band_g_key))
+        return;
+    n = juce_comp_nchild(band_g_bar);
+    for (i = 0; i < n; i++) {
+        uintptr_t c = juce_comp_child(band_g_bar, i);
+
+        if (!c || band_is_ours(c)) continue;
+        if (juce_comp_bounds(c, b) != 0) continue;
+        if (!band_g_bpm && b[0] == KIT_BAND_BPM_X && b[1] == KIT_BAND_BPM_Y &&
+            b[2] == KIT_BAND_BPM_W && b[3] == KIT_BAND_BPM_H)
+            band_g_bpm = c;
+        else if (!band_g_key && b[0] == KIT_BAND_KEY_X && b[1] == KIT_BAND_KEY_Y &&
+                 b[2] == KIT_BAND_KEY_W && b[3] == KIT_BAND_KEY_H)
+            band_g_key = c;
+    }
+}
+
+/* One label's text. Always leaves `out` a valid string; 0 when there is no label
+ * or nothing readable in it. */
+static int band_label_text(uintptr_t lbl, char *out, size_t cap)
+{
+    if (cap == 0)
+        return 0;
+    out[0] = '\0';
+    if (!lbl)
+        return 0;
+    if (juce_string_read(lbl + LABEL_LASTTEXT_OFF, out, cap) != 0) {
+        out[0] = '\0';
+        return 0;
+    }
+    return out[0] != '\0';
+}
+
+int kit_band_read_meta(struct kit_band_meta *out)
+{
+    if (!out)
+        return 0;
+    memset(out, 0, sizeof(*out));
+    if (!band_g_bar)
+        return 0;
+    band_title_squeeze();       /* idempotent: locates the title if it has not */
+    band_locate_readouts();
+    band_label_text(band_g_title, out->title, sizeof(out->title));
+    band_label_text(band_g_bpm, out->bpm, sizeof(out->bpm));
+    band_label_text(band_g_key, out->key, sizeof(out->key));
+    /* A title is the one field worth reporting success for: without it there is
+     * nothing to name a file or tag it with. */
+    return out->title[0] != '\0';
+}
+
+/* ---- what the title bar is actually showing --------------------------------
+ *
+ * Walks the bar's children and reports each one's class, bounds and the text of
+ * any juce::Label among them.
+ *
+ * This exists because nothing in the tree has ever read a deck-OWNED label. The
+ * play screen shows the loaded track's title and artist in this bar, and USB Save
+ * wants both to name and tag a saved file -- but only the TITLE has ever been
+ * located (by bounds, in band_title_squeeze above), and no artist label is named
+ * anywhere in the tree. Guessing an index into an app-owned child list would be a
+ * measurement nobody made, so: look, then build on what is really there.
+ *
+ * A juce::String read at a fixed offset of something that is NOT a Label lands on
+ * a garbage pointer, which juce_string_read() reports as a failed read rather than
+ * faulting -- so every child can be probed safely, and the text column of this
+ * dump is what says which ones are real labels. Text is flattened to printable
+ * characters on the way out: it goes to the serial console, where a title holding
+ * a newline would split the line.
+ *
+ * Returns the number of children that answered as labels, or -1 when the bar has
+ * not been attached. [message] */
+int kit_band_dump_labels(void)
+{
+    char cls[128], txt[256];
+    int32_t b[4];
+    int n, i, labels = 0;
+
+    if (!band_g_bar) {
+        MDBG("band: labels: the title bar is not attached yet\n");
+        return -1;
+    }
+    n = juce_comp_nchild(band_g_bar);
+    MDBG("band: labels: title bar has %d children\n", n);
+
+    for (i = 0; i < n; i++) {
+        uintptr_t c = juce_comp_child(band_g_bar, i);
+        int ok;
+
+        if (!c) continue;
+        if (band_is_ours(c)) {
+            MDBG("band: labels: [%d] ours -> not a deck label\n", i);
+            continue;
+        }
+        if (juce_comp_bounds(c, b) != 0) continue;
+
+        ok = juce_string_read(c + LABEL_LASTTEXT_OFF, txt, sizeof(txt)) == 0;
+        if (ok) {
+            size_t k;
+
+            for (k = 0; txt[k]; k++) {
+                unsigned char ch = (unsigned char)txt[k];
+
+                if (ch < 0x20 || ch == 0x7f)
+                    txt[k] = '.';
+            }
+            labels++;
+        }
+        MDBG("band: labels: [%d] %s {%d,%d,%d,%d} text=\"%s\"\n", i,
+             juce_comp_class_name(c, cls, sizeof(cls)),
+             b[0], b[1], b[2], b[3], ok ? txt : "");
+    }
+
+    MDBG("band: labels: %d of %d children answered as labels\n", labels, n);
+    return labels;
 }
 
 void kit_band_slots_changed(void)

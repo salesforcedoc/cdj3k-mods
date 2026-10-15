@@ -194,7 +194,8 @@ extern "C" {
  * before constructing this label, so the version this deck reports over ProLink
  * is untouched -- the suffix is on the glass only. */
 #define FN_LABEL_SETTEXT       ep122_sym(EP122_JUCE_LABEL_SETTEXT)  /* juce::Label::setText(const String&, NotificationType) */
-#define LABEL_LASTTEXT_OFF     0x170        /* juce::Label::lastTextValue (a juce::String) */
+/* LABEL_LASTTEXT_OFF (0x170, juce::Label::lastTextValue) moved to juce/juce.h --
+ * a juce::Label fact rather than a menu one, and kit/band.c reads it now too. */
 #define VER_MOD_TAG            "-m"
 #define NOTIFY_NONE            0            /* juce::dontSendNotification */
 

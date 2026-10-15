@@ -322,6 +322,10 @@ int  theme_sprite_size(int32_t w, int32_t h);
 int  theme_bitmap(void *pd, int32_t w, int32_t h, struct theme_bitmapdata *bd);
 int  theme_is_waveform(const void *pd, int32_t *pw, int32_t *ph, int *palpha);
 uint64_t theme_fingerprint(const struct theme_bitmapdata *bd, int32_t w, int32_t h);
+
+/* The album art accessors live in artwork.h, which is public: USB Save wants
+ * them too. */
+#include "theme/artwork.h"
 void theme_img_probe(const void *pd, const struct theme_bitmapdata *bd,
                             int32_t w, int32_t h, int32_t fmt, const char *verdict);
 void theme_wave_census(const struct theme_bitmapdata *bd, int32_t w, int32_t h);
