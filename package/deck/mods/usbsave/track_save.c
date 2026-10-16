@@ -1251,15 +1251,28 @@ static void save_one(const char *path, const struct kit_band_meta *meta,
     bpm_x100 = meta ? parse_bpm(meta->bpm) : 0;
     if (bpm_x100 == 0 && cm.bpm > 0 && cm.bpm <= 10000)
         bpm_x100 = (int)cm.bpm * 100;
-    if (bpm_x100 > 0 && bpm_x100 <= 0xffff) {
-        bpm_be[0] = (uint8_t)(bpm_x100 >> 8);
-        bpm_be[1] = (uint8_t)bpm_x100;
-        memcpy(tags[tags_n].name, "tmpo", 4);
-        tags[tags_n].type = MOD_MP4_INT16;
-        tags[tags_n].value = bpm_be;
-        tags[tags_n].value_len = sizeof(bpm_be);
-        tags_payload += 8 + 16 + (int64_t)tags[tags_n].value_len;
-        tags_n++;
+    /* THE WHOLE BPM, not hundredths. Apple's `tmpo` is defined as hundredths -- 112
+     * BPM is 11200 -- and a reader that follows that divides by 100 and shows 112.
+     * The readers this has to satisfy do not: the saved file read back showed
+     * "11200" where the deck's own screen said 112, so what goes in is the number
+     * a person would say. The cost, stated plainly: a strictly-conforming reader
+     * would now show 1.12 BPM for a track of 112. That is the trade being made,
+     * and it is reversible in this one line. */
+    {
+        /* Rounded, not truncated: the deck's readout carries a decimal, so a
+         * track at 112.5 would otherwise be tagged 112 rather than 113. */
+        int bpm_int = (bpm_x100 + 50) / 100;
+
+        if (bpm_int > 0 && bpm_int <= 0xffff) {
+            bpm_be[0] = (uint8_t)(bpm_int >> 8);
+            bpm_be[1] = (uint8_t)bpm_int;
+            memcpy(tags[tags_n].name, "tmpo", 4);
+            tags[tags_n].type = MOD_MP4_INT16;
+            tags[tags_n].value = bpm_be;
+            tags[tags_n].value_len = sizeof(bpm_be);
+            tags_payload += 8 + 16 + (int64_t)tags[tags_n].value_len;
+            tags_n++;
+        }
     }
     /* The key, in ONE notation: the metadata's Camelot when the lookup hit, and
      * otherwise the deck's own readout put through the wheel. The deck draws some
