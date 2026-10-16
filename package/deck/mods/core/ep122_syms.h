@@ -18,6 +18,8 @@
 enum ep122_sym {
     EP122_BTN,
     EP122_TOUCHARIA,
+    EP122_WAVEFORM_TITLE,
+    EP122_VIEW_TRANSITION,
     EP122_DISPLAY_REFRESH,
     EP122_LABEL,
     EP122_BROWSE_TITLE,
@@ -268,6 +270,8 @@ static const struct ep122_vt_spec {
 } k_ep122_vt[] = {
     { EP122_BTN, "N3gui18TogglesImageButtonE", NULL },   /* 0x215c338 */
     { EP122_TOUCHARIA, "N3gui23WaveformViewTitleWidget9TouchAriaE", NULL },   /* 0x2127968 */
+    { EP122_WAVEFORM_TITLE, "N3gui23WaveformViewTitleWidgetE", NULL },   /* 0x2128790 */
+    { EP122_VIEW_TRANSITION, "N3gui21ViewTransitionManagerE", NULL },   /* 0x20894b0 */
     { EP122_DISPLAY_REFRESH, "N3gui24DisplayRefleshCycleTimerE", NULL },   /* 0x2086710 */
     { EP122_LABEL, "N4juce5LabelE", NULL },   /* 0x24e2ac0 */
     { EP122_BROWSE_TITLE, "N3gui17BrowseTitleWidgetE", "N4juce9ComponentE" },   /* 0x2124a68 */
@@ -356,7 +360,7 @@ static const struct ep122_vt_spec {
     { EP122_GRIDBTN_SHIFT, "N3gui18grid_adjust_button15ShiftGridButtonE", NULL },   /* 0x20c5500 */
     { EP122_GRIDBTN_RESET, "N3gui18grid_adjust_button11ResetButtonE", NULL },   /* 0x20c6560 */
 };
-#define EP122_N_VT 89
+#define EP122_N_VT 91
 
 /* ---- virtuals: whatever the slot holds IS the implementation ---- */
 static const struct ep122_slot_spec {
@@ -611,6 +615,8 @@ static const struct ep122_call_spec {
 static const char *const k_ep122_sym_name[] = {
     "BTN",
     "TOUCHARIA",
+    "WAVEFORM_TITLE",
+    "VIEW_TRANSITION",
     "DISPLAY_REFRESH",
     "LABEL",
     "BROWSE_TITLE",

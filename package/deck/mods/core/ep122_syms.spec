@@ -65,6 +65,17 @@
 # --- mods/stem/ui/ ---
 vtable BTN                class=N3gui18TogglesImageButtonE
 vtable TOUCHARIA          class=N3gui23WaveformViewTitleWidget9TouchAriaE
+# The PLAY SCREEN itself, which is the parent of the TouchAria above -- a screen is
+# shown and hidden as a whole, so this is where "the play screen came up" is visible,
+# while a child only hears about its own visibility changing. The gate needs both
+# directions: a screen switch shows one and hides the other.
+vtable WAVEFORM_TITLE      class=N3gui23WaveformViewTitleWidgetE
+# THE DECK'S OWN SCREEN SWITCHING. A screen change is a view transition, and this
+# is the class that performs them -- which makes it the authoritative answer to
+# "which screen is up", where watching widgets was only ever a guess. Found by name
+# after two widget-based attempts were measured wrong: the deck's screens are not
+# toggled by component visibility, so nothing shows or hides when they change.
+vtable VIEW_TRANSITION    class=N3gui21ViewTransitionManagerE
 vtable DISPLAY_REFRESH    class=N3gui24DisplayRefleshCycleTimerE
 vtable LABEL              class=N4juce5LabelE
 
