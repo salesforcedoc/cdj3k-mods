@@ -24,6 +24,14 @@ void db_watch_open(const char *path, int fd, int flags);
 void db_watch_write(int fd, size_t count, uintptr_t ra);
 void db_watch_close(int fd);
 
+/* Forward from the host's read interposer: one control-panel frame, in place.
+ * A mod may set a switch bit or move the rotary counter in it, and whatever it
+ * does not touch reaches EP122 exactly as the panel sent it -- which is the
+ * whole of "simulate a key press", because the deck cannot tell a synthesised
+ * frame from a real one. Called for every frame, so it must return immediately
+ * when no mod has anything to say. */
+void panel_frame(uint8_t *buf, size_t len);
+
 
 #ifdef __cplusplus
 }
