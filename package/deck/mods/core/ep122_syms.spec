@@ -737,6 +737,44 @@ slot   SRV_MSG_RUN    vtable=SRV_MSG_TASK off=0x10
 # instantiation is not.
 vtable TRACKEND_TASK  class=*N4meow16AsyncTaskBoxBase9AsyncTaskIZN9dj_player23StateNotificationServer13checkTrackEndERKNS2_11PlayerStateEEUlvE_EE
 slot   TRACKEND_RUN   vtable=TRACKEND_TASK off=0x10
+# The other half of the same pair: checkTrackChange is where "the loaded track is
+# now a different one" is decided, which is the direct measurement of whether the
+# end-of-track advance happened at all rather than of whether it was considered.
+vtable TRACKCHANGE_TASK  class=*N4meow16AsyncTaskBoxBase9AsyncTaskIZN9dj_player23StateNotificationServer16checkTrackChangeERKNS2_11PlayerStateEEUlvE_EE
+slot   TRACKCHANGE_RUN   vtable=TRACKCHANGE_TASK off=0x10
+# The deck's own play/pause entry points, as tasks. Hooked as a CONTROL on the
+# state checks above: unlike them this one certainly runs, so it says whether an
+# AsyncTaskBox task is dispatched through its vtable slot at all in this build --
+# and a play marker is worth having either way.
+vtable PLAY_TASK  class=*N4meow16AsyncTaskBoxBase9AsyncTaskIKZN9dj_player22PlayPauseControlFacade4playENS2_17PlayStartBehaviorENS2_12SlipBehaviorEEUlvE_EE
+slot   PLAY_RUN   vtable=PLAY_TASK off=0x10
+
+# The deck's own play/pause entry points, as tasks. Hooked as a CONTROL on the
+# state checks above: unlike them this one certainly runs, so it says whether an
+# AsyncTaskBox task is dispatched through its vtable slot at all in this build --
+# and a play marker is worth having either way.
+vtable PAUSE_TASK  class=*N4meow16AsyncTaskBoxBase9AsyncTaskIKZN9dj_player22PlayPauseControlFacade5pauseENS2_13PauseBehaviorENS2_12SlipBehaviorEEUlvE_EE
+slot   PAUSE_RUN   vtable=PAUSE_TASK off=0x10
+# The state checks' BODIES, reached the way the deck actually reaches them.
+#
+# Hooked as functions rather than as the task types' run slots, which is a
+# measurement and not a preference: the run slot of each such task vtable holds a
+# four-instruction thunk (0x1117b00 for checkTrackEnd), and four slot patches --
+# the two checks plus the play/pause facades, as a control -- were installed at
+# boot and never fired once, through two full play-throughs, the second of which
+# ended and advanced to the next track by itself.
+#
+# The body is what they do reach: checkTrackEnd's own state loop at 0x1117b18
+# calls TRACKEND_INVOKE by direct BL, carrying the callable and a pointer to the
+# state. (A call through a slot is an indirect branch, so the absence of a B or BL
+# naming the thunk would prove nothing on its own -- the slot patches not firing is
+# the measurement, and this call site is why.)
+#
+# THE INVOKER IS THE HOOK: it runs whenever the check's body runs, however it was
+# reached, and it takes the state as its second argument -- the PlayerState the
+# check is about to judge.
+func TRACKEND_INVOKE    addr=0x111fd60
+func TRACKEND_CHECK     addr=0x1117b18
 
 
 # =============================================================================

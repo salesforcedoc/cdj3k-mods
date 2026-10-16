@@ -237,6 +237,14 @@ enum ep122_sym {
     EP122_SRV_MSG_RUN,
     EP122_TRACKEND_TASK,
     EP122_TRACKEND_RUN,
+    EP122_TRACKCHANGE_TASK,
+    EP122_TRACKCHANGE_RUN,
+    EP122_PLAY_TASK,
+    EP122_PLAY_RUN,
+    EP122_PAUSE_TASK,
+    EP122_PAUSE_RUN,
+    EP122_TRACKEND_INVOKE,
+    EP122_TRACKEND_CHECK,
     EP122_DJDB_CONTEXT_SLOT,
     EP122_SKIN_FG,
     EP122_SKIN_BG,
@@ -340,12 +348,15 @@ static const struct ep122_vt_spec {
     { EP122_QUANT_VALUE_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN3gui13QuantizeState16onSettingChangedERKN4juce10IdentifierERKN19application_setting19Value_QuantizeValueEEUlvE_EE", NULL },   /* 0x219f9f8 */
     { EP122_SRV_MSG_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN23client_server_framework16ServerThreadBase14receiveMessageEPN11data_stream17DataStreamMessageEjEUlvE_EE", NULL },   /* 0x1f1a9c0 */
     { EP122_TRACKEND_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN9dj_player23StateNotificationServer13checkTrackEndERKNS2_11PlayerStateEEUlvE_EE", NULL },   /* 0x1fdc400 */
+    { EP122_TRACKCHANGE_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN9dj_player23StateNotificationServer16checkTrackChangeERKNS2_11PlayerStateEEUlvE_EE", NULL },   /* 0x1fdc5b8 */
+    { EP122_PLAY_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIKZN9dj_player22PlayPauseControlFacade4playENS2_17PlayStartBehaviorENS2_12SlipBehaviorEEUlvE_EE", NULL },   /* 0x1fc0338 */
+    { EP122_PAUSE_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIKZN9dj_player22PlayPauseControlFacade5pauseENS2_13PauseBehaviorENS2_12SlipBehaviorEEUlvE_EE", NULL },   /* 0x1fc03e0 */
     { EP122_GRIDPANEL, "N3gui17detailed_waveform10GridAdjustE", NULL },   /* 0x20c75c8 */
     { EP122_GRIDBTN_SNAP, "N3gui18grid_adjust_button14SnapGridButtonE", NULL },   /* 0x20c44a0 */
     { EP122_GRIDBTN_SHIFT, "N3gui18grid_adjust_button15ShiftGridButtonE", NULL },   /* 0x20c5500 */
     { EP122_GRIDBTN_RESET, "N3gui18grid_adjust_button11ResetButtonE", NULL },   /* 0x20c6560 */
 };
-#define EP122_N_VT 86
+#define EP122_N_VT 89
 
 /* ---- virtuals: whatever the slot holds IS the implementation ---- */
 static const struct ep122_slot_spec {
@@ -420,8 +431,11 @@ static const struct ep122_slot_spec {
     { EP122_HUI_MC_UPDATE, EP122_HUI_MULTICOLOR, 0x10 },   /* 0x17de930 */
     { EP122_SRV_MSG_RUN, EP122_SRV_MSG_TASK, 0x10 },   /* 0xb379b8 */
     { EP122_TRACKEND_RUN, EP122_TRACKEND_TASK, 0x10 },   /* 0x1117b00 */
+    { EP122_TRACKCHANGE_RUN, EP122_TRACKCHANGE_TASK, 0x10 },   /* 0x11174e8 */
+    { EP122_PLAY_RUN, EP122_PLAY_TASK, 0x10 },   /* 0x1033850 */
+    { EP122_PAUSE_RUN, EP122_PAUSE_TASK, 0x10 },   /* 0x1034338 */
 };
-#define EP122_N_SLOT 67
+#define EP122_N_SLOT 70
 
 /* ---- free functions: masked aarch64 signatures ---- */
 #define EP122_SIG_INSNS_MAX 96
@@ -559,8 +573,10 @@ static const struct ep122_fn_spec {
     { EP122_DJDB_MARK_DIRTY, 0xffff, 0, 0, 0, 8, 0, 0xb4f8, 0xf4b551447bd78289ULL },   /* 0x1c3ea30 */
     { EP122_DJDB_MARK_DIRTY_PLAIN, 0xffff, 0, 0, 0, 8, 0, 0xb4f8, 0xfea0da6be0c2c899ULL },   /* 0x1c3d4c0 */
     { EP122_DJDB_BUFFER_GET_PAGE, 0xffff, 0, 0, 0, 8, 0, 0x47e5, 0xa6d98b6d253cb35bULL },   /* 0x1c3f6f0 */
+    { EP122_TRACKEND_INVOKE, 0xffff, 0, 0, 0, 16, 0, 0x47e5, 0xbca6eb68e7cfb3c1ULL },   /* 0x111fd60 */
+    { EP122_TRACKEND_CHECK, 0xffff, 0, 0, 0, 8, 0, 0x6dbf, 0x2ca96168eeebd323ULL },   /* 0x1117b18 */
 };
-#define EP122_N_FN 123
+#define EP122_N_FN 125
 
 /* ---- globals: read the ADRP pair the deck's own code executes ---- */
 static const struct ep122_data_spec {
@@ -814,6 +830,14 @@ static const char *const k_ep122_sym_name[] = {
     "SRV_MSG_RUN",
     "TRACKEND_TASK",
     "TRACKEND_RUN",
+    "TRACKCHANGE_TASK",
+    "TRACKCHANGE_RUN",
+    "PLAY_TASK",
+    "PLAY_RUN",
+    "PAUSE_TASK",
+    "PAUSE_RUN",
+    "TRACKEND_INVOKE",
+    "TRACKEND_CHECK",
     "DJDB_CONTEXT_SLOT",
     "SKIN_FG",
     "SKIN_BG",
