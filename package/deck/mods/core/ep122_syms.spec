@@ -722,6 +722,21 @@ func DJDB_BUFFER_GET_PAGE    addr=0x1c3f6f0
 # DB handle has a context, so the drain selects itself.
 vtable SRV_MSG_TASK   class=*N4meow16AsyncTaskBoxBase9AsyncTaskIZN23client_server_framework16ServerThreadBase14receiveMessageEPN11data_stream17DataStreamMessageEjEUlvE_EE
 slot   SRV_MSG_RUN    vtable=SRV_MSG_TASK off=0x10
+# dj_player's state notification server watches the player and reports per state:
+# one check* task each, every one an AsyncTaskBox task like the one above.
+# checkTrackEnd(PlayerState const&) is where "the track reached its natural end"
+# is decided -- and, since no vtable in this build names ITrackEndNotificationLisner,
+# the listener the server offers for exactly that, where whatever the deck does
+# about it is decided too. That is the place to look for the one behaviour worth
+# knowing here: the advance to the next streaming track happens on the performance
+# view and not on the browse view, so the difference is in this task, not in a
+# listener.
+#
+# A SLOT, for the same reason as SRV_MSG_RUN: the task type is named by RTTI, so
+# the box's run slot is exact, where a masked signature on a template
+# instantiation is not.
+vtable TRACKEND_TASK  class=*N4meow16AsyncTaskBoxBase9AsyncTaskIZN9dj_player23StateNotificationServer13checkTrackEndERKNS2_11PlayerStateEEUlvE_EE
+slot   TRACKEND_RUN   vtable=TRACKEND_TASK off=0x10
 
 
 # =============================================================================

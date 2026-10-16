@@ -235,6 +235,8 @@ enum ep122_sym {
     EP122_DJDB_BUFFER_GET_PAGE,
     EP122_SRV_MSG_TASK,
     EP122_SRV_MSG_RUN,
+    EP122_TRACKEND_TASK,
+    EP122_TRACKEND_RUN,
     EP122_DJDB_CONTEXT_SLOT,
     EP122_SKIN_FG,
     EP122_SKIN_BG,
@@ -337,12 +339,13 @@ static const struct ep122_vt_spec {
     { EP122_QUANT_MODE_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN3gui13QuantizeState16onSettingChangedERKN4juce10IdentifierERKN19application_setting14Value_QuantizeEEUlvE_EE", NULL },   /* 0x219fa40 */
     { EP122_QUANT_VALUE_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN3gui13QuantizeState16onSettingChangedERKN4juce10IdentifierERKN19application_setting19Value_QuantizeValueEEUlvE_EE", NULL },   /* 0x219f9f8 */
     { EP122_SRV_MSG_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN23client_server_framework16ServerThreadBase14receiveMessageEPN11data_stream17DataStreamMessageEjEUlvE_EE", NULL },   /* 0x1f1a9c0 */
+    { EP122_TRACKEND_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN9dj_player23StateNotificationServer13checkTrackEndERKNS2_11PlayerStateEEUlvE_EE", NULL },   /* 0x1fdc400 */
     { EP122_GRIDPANEL, "N3gui17detailed_waveform10GridAdjustE", NULL },   /* 0x20c75c8 */
     { EP122_GRIDBTN_SNAP, "N3gui18grid_adjust_button14SnapGridButtonE", NULL },   /* 0x20c44a0 */
     { EP122_GRIDBTN_SHIFT, "N3gui18grid_adjust_button15ShiftGridButtonE", NULL },   /* 0x20c5500 */
     { EP122_GRIDBTN_RESET, "N3gui18grid_adjust_button11ResetButtonE", NULL },   /* 0x20c6560 */
 };
-#define EP122_N_VT 85
+#define EP122_N_VT 86
 
 /* ---- virtuals: whatever the slot holds IS the implementation ---- */
 static const struct ep122_slot_spec {
@@ -416,8 +419,9 @@ static const struct ep122_slot_spec {
     { EP122_PREVIEW_CLEAR, EP122_PREVIEW_CTL, 0x18 },   /* 0x807880 */
     { EP122_HUI_MC_UPDATE, EP122_HUI_MULTICOLOR, 0x10 },   /* 0x17de930 */
     { EP122_SRV_MSG_RUN, EP122_SRV_MSG_TASK, 0x10 },   /* 0xb379b8 */
+    { EP122_TRACKEND_RUN, EP122_TRACKEND_TASK, 0x10 },   /* 0x1117b00 */
 };
-#define EP122_N_SLOT 66
+#define EP122_N_SLOT 67
 
 /* ---- free functions: masked aarch64 signatures ---- */
 #define EP122_SIG_INSNS_MAX 96
@@ -808,6 +812,8 @@ static const char *const k_ep122_sym_name[] = {
     "DJDB_BUFFER_GET_PAGE",
     "SRV_MSG_TASK",
     "SRV_MSG_RUN",
+    "TRACKEND_TASK",
+    "TRACKEND_RUN",
     "DJDB_CONTEXT_SLOT",
     "SKIN_FG",
     "SKIN_BG",
