@@ -78,12 +78,15 @@ def parse_header(text):
                ref=int(m.group(4), 16))
           for m in re.finditer(r"\{ EP122_([A-Z0-9_]+), EP122_([A-Z0-9_]+), (\d+) \},"
                                r"\s*/\* 0x([0-9a-f]+) \*/", table(text, "call"))]
-    # One row per processor, reference first: a symbol's first row is the one
-    # this image is asked for, and a later row is the other processor's.
+    # One row per processor, reference first: a symbol's first row is the one this
+    # image is asked for, and a later row is the other processor's. That holds for
+    # the signature table and for the two tables that read an address out of a
+    # parent, which carry a row per processor for the same reason.
     seen = {}
-    for r in fn:
-        r["variant"] = r["name"] in seen
-        seen[r["name"]] = True
+    for rows in (fn, dt, ct):
+        for r in rows:
+            r["variant"] = r["name"] in seen
+            seen[r["name"]] = True
     return vt, sl, fn, dt, ct
 
 
@@ -128,7 +131,23 @@ def bl_targets(elf, start, span):
     return out
 
 
-def resolve_image(gs, elf, vt, sl, fn, dt, ct, rows, label):
+def wanted_symbols(tables):
+    """The symbols this image is asked for, and the address the header recorded.
+
+    A symbol's second row belongs to the other processor, so it is not asked of
+    this image at all.
+    """
+    ref, out = {}, []
+    for rows in tables:
+        for r in rows:
+            if r.get("variant") or r["name"] in ref:
+                continue
+            ref[r["name"]] = r["ref"]
+            out.append(r["name"])
+    return out, ref
+
+
+def resolve_image(gs, elf, vt, sl, fn, dt, ct):
     """resolve.c's phases, in its order: RTTI, slots, sweep, data, call."""
     sym = {}
     rtti = gs.Rtti(elf, [r["cls"] for r in vt])
@@ -176,33 +195,22 @@ def resolve_image(gs, elf, vt, sl, fn, dt, ct, rows, label):
             sym[r["name"]] = ordered[r["nth"]]
 
     for r in dt:
+        if r["variant"]:
+            continue
         src = sym.get(r["src"].replace("EP122_", ""))
         got = gs.adrp_pair_target(elf, src, r["insn"])[0] if src else None
         if got and not sym.get(r["name"]):
             sym[r["name"]] = got
     for r in ct:
+        if r["variant"]:
+            continue
         src = sym.get(r["src"].replace("EP122_", ""))
         got = gs.bl_target(elf, src, r["insn"])[0] if src else None
         if got and not sym.get(r["name"]):
             sym[r["name"]] = got
 
-    wanted, ref = [], {}
-    for r in list(vt) + list(sl) + list(fn) + list(dt) + list(ct):
-        name = r["name"]
-        if name not in ref:
-            if "variant" in r and r["variant"]:
-                continue
-            ref[name] = r["ref"]
-            wanted.append(name)
-    missing = [n for n in wanted if n not in sym]
-    moved = [n for n in wanted if n in sym and sym[n] != ref[n]]
-    print("%s: %d/%d symbols resolve, %d of them at an address the header's "
-          "comment does not have" % (label, len(sym), len(wanted), len(moved)))
-    if missing:
-        print("  UNRESOLVED (a mod needing these refuses on this image):")
-        for n in missing:
-            print("    " + n)
-    return missing
+    wanted, ref = wanted_symbols((vt, sl, fn, dt, ct))
+    return sym, wanted, ref
 
 
 def main():
@@ -221,14 +229,22 @@ def main():
 
     gs = load_gen()
     vt, sl, fn, dt, ct = parse_header(open(HEADER).read())
-    bad = 0
     try:
-        bad += bool(resolve_image(gs, gs.Elf(binary), vt, sl, fn, dt, ct, fn, binary))
+        sym, wanted, ref = resolve_image(gs, gs.Elf(binary), vt, sl, fn, dt, ct)
     except SystemExit as e:
         # The vtable walk bootstraps from the image's own type_info layout, which
         # only carries over between builds of the same processor. Being handed the
         # other one is a wrong argument, not a finding.
         raise SystemExit("%s: %s" % (binary, e))
+    missing = [n for n in wanted if n not in sym]
+    moved = [n for n in wanted if n in sym and sym[n] != ref[n]]
+    print("%s: %d/%d symbols resolve, %d of them at an address the header's "
+          "comment does not have" % (binary, len(sym), len(wanted), len(moved)))
+    if missing:
+        print("  UNRESOLVED (a mod needing these refuses on this image):")
+        for n in missing:
+            print("    " + n)
+    bad = bool(missing)
 
     if variant and os.path.exists(variant):
         # Only the signature rows can be checked here: the vtables and slots need

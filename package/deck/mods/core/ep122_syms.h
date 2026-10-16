@@ -518,7 +518,7 @@ static const struct ep122_fn_spec {
     { EP122_POPUP_SETMESSAGE, 0xffff, 0, 0, 0, 8, 0, 0x2ea9, 0x2bf579af7bb89c48ULL },   /* 0x154f9d0 */
     { EP122_POPUP_SETMESSAGE, 0xffff, 0, 0, 0, 8, 0, 0x007e, 0x50b867cad0acd272ULL },   /* 0x171ea40 */
     { EP122_POPUP_ADDLISTENER, EP122_SOURCE_SELECT_BUILD, 0, 1, 1024, 8, 0, 0xcf9c, 0xb70f85dbc47338aeULL },   /* 0x154fa60 */
-    { EP122_POPUP_ADDLISTENER, EP122_SOURCE_SELECT_BUILD, 0, 1, 1024, 8, 0, 0x6218, 0xb6d4358653d3f6d2ULL },   /* 0x171ec60 */
+    { EP122_POPUP_ADDLISTENER, 0xffff, 0, 0, 0, 8, 0, 0x6218, 0xb6d4358653d3f6d2ULL },   /* 0x171ec60 */
     { EP122_RMODEL_SETSTRINGS, 0xffff, 0, 0, 0, 8, 0, 0x388d, 0xab100e6f4f918e74ULL },   /* 0x1578bf8 */
     { EP122_RMODEL_SETSTRINGS, 0xffff, 0, 0, 0, 8, 0, 0x388d, 0x32e6106f2b2ebe1bULL },   /* 0x174458c */
     { EP122_SRC_CTOR, 0xffff, 0, 0, 0, 12, 0, 0xc196, 0x6f869eec50380c96ULL },   /* 0xa4df00 */

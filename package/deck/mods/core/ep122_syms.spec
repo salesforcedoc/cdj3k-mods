@@ -347,7 +347,7 @@ slot VIEW_MOUSEDOWN         vtable=UTILITY_VIEW       off=0x28
 slot VIEW_TOUCHSEL          vtable=UTILITY_VIEW       off=0x178
 slot VIEW_INPUT             vtable=UTILITY_VIEW       off=0x190
 slot VIEW_SWITCH            vtable=UTILITY_VIEW       off=0x198
-slot SOURCE_SELECT_BUILD    vtable=SOURCE_SELECT_VIEW off=0x178 ren=0x1598af0
+slot SOURCE_SELECT_BUILD    vtable=SOURCE_SELECT_VIEW off=0x178
 slot VIEW_ROWCHANGED        vtable=UTILITY_AS_MODEL_LISTENER off=0x0
 slot VIEW_KBD_KEY           vtable=UTILITY_AS_KBD_LISTENER   off=0x0
 
@@ -473,7 +473,7 @@ func POPUP_SETMESSAGE        addr=0x154f9d0 ren=0x171ea40
 # -- so no length disambiguates them (checked to 64). Scope it instead: only
 # the real one is called from SourceSelectView's builder, and the twin is not
 # called from anywhere at all. nth=0 because the scope leaves exactly one.
-func POPUP_ADDLISTENER       addr=0x154fa60 in=SOURCE_SELECT_BUILD span=0x400 nth=0 ren=0x171ec60 ren_in=SOURCE_SELECT_BUILD ren_span=0x400 ren_nth=0
+func POPUP_ADDLISTENER       addr=0x154fa60 in=SOURCE_SELECT_BUILD span=0x400 nth=0 ren=0x171ec60
 func RMODEL_SETSTRINGS       addr=0x1578bf8 ren=0x174458c
 func SRC_CTOR                addr=0xa4df00 ren=0xaec510
 
