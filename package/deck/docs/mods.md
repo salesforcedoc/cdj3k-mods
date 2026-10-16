@@ -37,6 +37,23 @@ Three mechanisms:
 There are no literal EP122 addresses in the mod sources. Slot *offsets*
 (`VT_SLOT_READ 0x10`) are ABI and stay inline; addresses do not.
 
+The spec's `addr=`/`ren=` values are the *reference build's* addresses: they
+anchor the signature the generator records, and they are the one part that does
+not survive a firmware change on its own. The generator trusts them (a window at
+a stale address is still a unique window) and the build never re-derives the
+header, so pointing at a build the spec was not re-anchored to is quiet.
+`tools/check-header.py` is the answer: it replays the committed header's own
+descriptors against an image, the way `resolve.c` will, and says how many symbols
+resolve and how many resolve somewhere the header's comment does not have. Before
+re-anchoring the spec, every one of them was at a moved address -- the mods still
+worked, but the spec could no longer be regenerated. Re-anchor with the addresses
+that tool reports:
+
+```
+tools/check-header.py -b build/EP122-deck -v path/to/EP122.RENESAS
+tools/gen-syms.py                                  # re-anchored spec, regenerated header
+```
+
 ## Install
 
 One constructor (`common.c`), and nothing that lists the mods. A feature declares

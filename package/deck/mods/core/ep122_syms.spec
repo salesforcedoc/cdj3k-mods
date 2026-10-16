@@ -347,7 +347,7 @@ slot VIEW_MOUSEDOWN         vtable=UTILITY_VIEW       off=0x28
 slot VIEW_TOUCHSEL          vtable=UTILITY_VIEW       off=0x178
 slot VIEW_INPUT             vtable=UTILITY_VIEW       off=0x190
 slot VIEW_SWITCH            vtable=UTILITY_VIEW       off=0x198
-slot SOURCE_SELECT_BUILD    vtable=SOURCE_SELECT_VIEW off=0x178
+slot SOURCE_SELECT_BUILD    vtable=SOURCE_SELECT_VIEW off=0x178 ren=0x1598af0
 slot VIEW_ROWCHANGED        vtable=UTILITY_AS_MODEL_LISTENER off=0x0
 slot VIEW_KBD_KEY           vtable=UTILITY_AS_KBD_LISTENER   off=0x0
 
@@ -375,13 +375,13 @@ slot WAVE_ANALYZE           vtable=WAVE_ANALYZE_CTRL  off=0x10
 # Not hooked and not called: this is the ANCHOR the link() below is found from.
 # doRequest is the deck's own registerBeatGridOffset call site, and its first BL
 # is the one that resolves the cache.
-slot BEATGRID_OFF_REGIST_REQ vtable=BEATGRID_OFF_REGIST off=0x10 ren=0x8913e0
-slot WAVEFORM_THROW          vtable=WAVEFORM_REQ_THROWER off=0x10 ren=0xccca50
+slot BEATGRID_OFF_REGIST_REQ vtable=BEATGRID_OFF_REGIST off=0x10 ren=0x88e7a0
+slot WAVEFORM_THROW          vtable=WAVEFORM_REQ_THROWER off=0x10 ren=0xcc5e50
 
 slot GATE_PRESSPAD_RUN      vtable=GATE_PRESSPAD_TASK  off=0x10
 slot GATE_RELEASEPAD_RUN    vtable=GATE_RELEASEPAD_TASK off=0x10
 slot GATE_PLAYPAUSE_RUN     vtable=GATE_PLAYPAUSE_TASK off=0x10
-slot GATE_BACK_CUE          vtable=GATE_RELEASEOP_TASK off=0x10 ren=0x1a76db0
+slot GATE_BACK_CUE          vtable=GATE_RELEASEOP_TASK off=0x10 ren=0x1a49ec0
 slot GATE_PADREL_SENTINEL   vtable=GATE_HOTCUE_HANDLER off=0x20
 
 slot MEMCUE_MEMORY_RUN      vtable=MEMCUE_MEMORY_TASK  off=0x10
@@ -403,7 +403,7 @@ slot CUE_SETPOINT           vtable=CUE_CONTROLLER      off=0x18
 # link into setPoint and cueing on the Renesas builds, so those two carry no BL
 # to key on. This forwarder still calls it out of line on both compilers, and on
 # the RK3399 it is the only BL in the whole function.
-slot CUE_FACADE_FWD         vtable=CUE_CONTROLLER      off=0xa0    ren=0x84b990
+slot CUE_FACADE_FWD         vtable=CUE_CONTROLLER      off=0xa0    ren=0x848e20
 
 slot PREVIEW_SET            vtable=PREVIEW_CTL         off=0x10
 slot PREVIEW_CLEAR          vtable=PREVIEW_CTL         off=0x18
@@ -415,24 +415,24 @@ slot HUI_MC_UPDATE          vtable=HUI_MULTICOLOR      off=0x10
 # =============================================================================
 
 # --- juce, shared by mod_menu.c / ui.c / decode.c / wave_req_probe.c ---
-func JUCE_STRING_CTOR_CSTR   addr=0x1a55060 ren=0x1c7e560
-func JUCE_STRING_DTOR        addr=0x1a1d9b0 ren=0x1c5bb10
-func JUCE_STRING_CTOR_EMPTY  addr=0x1a308c0 ren=0x1c5d9e0
-func JUCE_VAR_CTOR_STRING    addr=0x1a23300 ren=0x1c4fa50
-func JUCE_VAR_DTOR           addr=0x1a1ac10
-func JUCE_VALUE_SETVALUE     addr=0x1aa86e0
-func JUCE_FONT_DTOR          addr=0x1afa8a0 ren=0x1d2d530
-func JUCE_GFX_SETFONT        addr=0x1ad0840 ren=0x1cf9ae0
-func JUCE_GFX_SETCOLOUR      addr=0x1ad03f0 ren=0x1d28110
-func JUCE_GFX_FILLRECT_INT   addr=0x1ad0930 ren=0x1cf9bc0
-func JUCE_GFX_DRAWTEXT       addr=0x1b0c600 ren=0x1d34b00
-func JUCE_COMP_REPAINT_RECT  addr=0x1ba7620 ren=0x1dbe2e0
-func JUCE_COMP_REPAINT       addr=0x1ba9e50 ren=0x1dc0ad0
-func JUCE_COMP_SETCOLOUR     addr=0x1b5f510 ren=0x1d7db70
-func JUCE_COMP_SETBOUNDS     addr=0x1bc08c0 ren=0x1dc59f0
-func JUCE_COMP_SETTOPLEFT    addr=0x1bc1560 ren=0x1dc6300
-func JUCE_COMP_ADDVISIBLE    addr=0x1bbef90 ren=0x1ddc2e0
-func JUCE_COMP_GRABFOCUS     addr=0x1baf350 ren=0x1dd24d0
+func JUCE_STRING_CTOR_CSTR   addr=0x1a2fea0 ren=0x1c51670
+func JUCE_STRING_DTOR        addr=0x19f87f0 ren=0x1c2ec20
+func JUCE_STRING_CTOR_EMPTY  addr=0x1a0b700 ren=0x1c30af0
+func JUCE_VAR_CTOR_STRING    addr=0x19fe140 ren=0x1c22b60
+func JUCE_VAR_DTOR           addr=0x19f5a50
+func JUCE_VALUE_SETVALUE     addr=0x1a835f0
+func JUCE_FONT_DTOR          addr=0x1ad57b0 ren=0x1d006e0
+func JUCE_GFX_SETFONT        addr=0x1aab750 ren=0x1cccc90
+func JUCE_GFX_SETCOLOUR      addr=0x1aab300 ren=0x1cfb2c0
+func JUCE_GFX_FILLRECT_INT   addr=0x1aab840 ren=0x1cccd70
+func JUCE_GFX_DRAWTEXT       addr=0x1ae7510 ren=0x1d07cb0
+func JUCE_COMP_REPAINT_RECT  addr=0x1b82530 ren=0x1d91490
+func JUCE_COMP_REPAINT       addr=0x1b84d60 ren=0x1d93c80
+func JUCE_COMP_SETCOLOUR     addr=0x1b3a420 ren=0x1d50d20
+func JUCE_COMP_SETBOUNDS     addr=0x1b9b7d0 ren=0x1d98ba0
+func JUCE_COMP_SETTOPLEFT    addr=0x1b9c470 ren=0x1d994b0
+func JUCE_COMP_ADDVISIBLE    addr=0x1b99ea0 ren=0x1daf490
+func JUCE_COMP_GRABFOCUS     addr=0x1b8a260 ren=0x1da5680
 
 # juce::TableHeaderComponent, which gui::TrackListHeader is unmodified except for
 # its mouseDown. The browse EDIT mode reads the sort off it, forces its own, and
@@ -440,42 +440,42 @@ func JUCE_COMP_GRABFOCUS     addr=0x1baf350 ren=0x1dd24d0
 #   getSortColumnId()                -- the column whose flags carry 0x20|0x40
 #   setSortColumnId(id, forwards)    -- clears those on every column, sets one,
 #                                       repaints and triggers the async re-sort
-func JUCE_HDR_GET_SORTCOL    addr=0x1b7b0d0 ren=0x1d94410
-func JUCE_HDR_SET_SORTCOL    addr=0x1bad710 ren=0x1dc3e30
-func JUCE_LABEL_CTOR         addr=0x1bb8330 ren=0x1dd9d20
-func JUCE_LABEL_SETFONT      addr=0x1baad20 ren=0x1dc1c20
-func JUCE_LABEL_JUSTIFY      addr=0x1baa690 ren=0x1dc15f0
-func JUCE_LABEL_SETTEXT      addr=0x1bf5360 ren=0x1e091d0
-func JUCE_IDENTIFIER_CTOR    addr=0x1a65dc0 ren=0x1c9b3f0
-func JUCE_STRARR_CTOR        addr=0x1a3c050 ren=0x1c67ea0
-func JUCE_STRARR_ADD         addr=0x1a3c5a0 ren=0x1c981d0
-func JUCE_STRARR_DTOR        addr=0x1a6d0b0 ren=0x1c954f0
-func JUCE_LISTBOX_SELECTROW  addr=0x1bddde0 ren=0x1e04790
-func JUCE_LISTBOX_CURRENTROW addr=0x1b79e90 ren=0x1d93210
-func JUCE_LISTBOX_UPDATE     addr=0x1bdb410 ren=0x1df12e0
-func JUCE_EDITOR_SETTEXT     addr=0x1bfc190 ren=0x1e10a40
-func JUCE_EDITOR_CTOR        addr=0x1c00480 ren=0x1e148a0
-func JUCE_EDITOR_SETFONT     addr=0x1bd1ac0 ren=0x1dceea0
-func JUCE_EDITOR_JUSTIFY     addr=0x1b7ba70
+func JUCE_HDR_GET_SORTCOL    addr=0x1b55fe0 ren=0x1d675c0
+func JUCE_HDR_SET_SORTCOL    addr=0x1b88620 ren=0x1d96fe0
+func JUCE_LABEL_CTOR         addr=0x1b93240 ren=0x1daced0
+func JUCE_LABEL_SETFONT      addr=0x1b85c30 ren=0x1d94dd0
+func JUCE_LABEL_JUSTIFY      addr=0x1b855a0 ren=0x1d947a0
+func JUCE_LABEL_SETTEXT      addr=0x1bd0270 ren=0x1ddc380
+func JUCE_IDENTIFIER_CTOR    addr=0x1a40c00 ren=0x1c6e500
+func JUCE_STRARR_CTOR        addr=0x1a16e90 ren=0x1c3afb0
+func JUCE_STRARR_ADD         addr=0x1a173e0 ren=0x1c6b2e0
+func JUCE_STRARR_DTOR        addr=0x1a47ef0 ren=0x1c68600
+func JUCE_LISTBOX_SELECTROW  addr=0x1bb8cf0 ren=0x1dd7940
+func JUCE_LISTBOX_CURRENTROW addr=0x1b54da0 ren=0x1d663c0
+func JUCE_LISTBOX_UPDATE     addr=0x1bb6320 ren=0x1dc4490
+func JUCE_EDITOR_SETTEXT     addr=0x1bd70a0 ren=0x1de3bf0
+func JUCE_EDITOR_CTOR        addr=0x1bdb390 ren=0x1de7a50
+func JUCE_EDITOR_SETFONT     addr=0x1bac9d0 ren=0x1da2050
+func JUCE_EDITOR_JUSTIFY     addr=0x1b56980
 
 # --- EP122's own ---
-func EP122_FONT_BUILD        addr=0x175d6e8 ren=0x1986da0
-func CREATE_READER_FOR       addr=0xa3d120 ren=0xad9e10
-func SET_QUICKMENU_MODE      addr=0x14a40e0 ren=0x1664360
-func KBD_SHOW                addr=0x143a608 ren=0x15eea10
-func KBD_HIDE                addr=0x143a5b0 ren=0x15ee660
-func KBD_KEY_TO_TEXT         addr=0x144e5b8 ren=0x16088a0
-func ENTER_DJSETTING         addr=0x14361e0 ren=0x15e7500
-func POPUP_CTOR              addr=0x15782b0 ren=0x174c7a0
-func POPUP_SETMESSAGE        addr=0x15734b0 ren=0x17488e0
+func EP122_FONT_BUILD        addr=0x17386d8 ren=0x195a090
+func CREATE_READER_FOR       addr=0xa36bd8 ren=0xad2230
+func SET_QUICKMENU_MODE      addr=0x14807d0 ren=0x163a3d0
+func KBD_SHOW                addr=0x1416d48 ren=0x15c48c0
+func KBD_HIDE                addr=0x1416cf0 ren=0x15c4510
+func KBD_KEY_TO_TEXT         addr=0x142acd0 ren=0x15de700
+func ENTER_DJSETTING         addr=0x1412920 ren=0x15bd3b0
+func POPUP_CTOR              addr=0x15547d0 ren=0x1722900
+func POPUP_SETMESSAGE        addr=0x154f9d0 ren=0x171ea40
 # v3.22 grew a second function that is byte-identical to this one for 41
 # instructions and then differs only in a BL offset, which the signature masks
 # -- so no length disambiguates them (checked to 64). Scope it instead: only
 # the real one is called from SourceSelectView's builder, and the twin is not
 # called from anywhere at all. nth=0 because the scope leaves exactly one.
-func POPUP_ADDLISTENER       addr=0x1573540 in=SOURCE_SELECT_BUILD span=0x400 nth=0 ren=0x1748b00
-func RMODEL_SETSTRINGS       addr=0x159c468 ren=0x176e5bc
-func SRC_CTOR                addr=0xa54430 ren=0xaf40d0
+func POPUP_ADDLISTENER       addr=0x154fa60 in=SOURCE_SELECT_BUILD span=0x400 nth=0 ren=0x171ec60 ren_in=SOURCE_SELECT_BUILD ren_span=0x400 ren_nth=0
+func RMODEL_SETSTRINGS       addr=0x1578bf8 ren=0x174458c
+func SRC_CTOR                addr=0xa4df00 ren=0xaec510
 
 # track_info_repository::AsyncCommand::RequestID::RequestID()
 #
@@ -492,7 +492,7 @@ func SRC_CTOR                addr=0xa54430 ren=0xaf40d0
 # NEXT function, which is a different one per build. So both variants are scoped
 # by the thrower, which calls the real ctor and never the twin on every extracted
 # build; the twin is the one with five call sites where the real one has sixty-odd.
-func ASYNC_REQUEST_ID        addr=0x1204cf8 in=WAVEFORM_THROW span=0x400 nth=0 ren=0x13943c0 ren_in=WAVEFORM_THROW ren_span=0x400 ren_nth=0
+func ASYNC_REQUEST_ID        addr=0x11e0138 in=WAVEFORM_THROW span=0x400 nth=0 ren=0x136b1c0 ren_in=WAVEFORM_THROW ren_span=0x400 ren_nth=0
 
 # djdb's UPDATE, the sibling of the insert at 0x1c66f80:
 #
@@ -505,25 +505,25 @@ func ASYNC_REQUEST_ID        addr=0x1204cf8 in=WAVEFORM_THROW span=0x400 nth=0 r
 # the column's own declared type -- so a caller states a column by index and
 # hands over a pointer, exactly as the deck's own DsqlTrackUpdater does for
 # RATING. See mods/db/djdb.c.
-func DJDB_UPDATE             addr=0x1c67790
+func DJDB_UPDATE             addr=0x1c426a0
 # music_library::ListCacheCollector::removePlaylistTrackListCache(unsigned).
 # The deck browses out of a list cache, so a reorder that only reaches the
 # database is a reorder nothing on screen ever shows. This is the deck's own way
 # of saying "that playlist's rows are stale". CALLED, never hooked -- its first
 # instruction pair holds an ADRP, which mod_patch_fn refuses to displace.
-func ML_DROP_PLAYLIST_CACHE  addr=0xf354e0 ren=0x1085290
+func ML_DROP_PLAYLIST_CACHE  addr=0xf15f70 ren=0x1062110
 # ...and the COLLECTOR to call it on, which is a member of the InformationUpdater
 # and reachable from nowhere we stand. This is the capacity trim at the top of
 # ListCacheCollector::createListCache, so it takes the collector as its first
 # argument and runs every time the deck caches a list -- which is every list the
 # DJ opens for the first time. Hooked only to read that pointer.
-func ML_CACHE_TRIM           addr=0xf35bf8 ren=0x10858b0
+func ML_CACHE_TRIM           addr=0xf16688 ren=0x1062730
 # The other two the deck drops alongside the track list whenever a playlist's
 # contents change: removePlaylistListCache(unsigned) and, with a 16-bit browse
 # category, removeHierarchyCache. Called with the same arguments the deck's own
 # delete paths use.
-func ML_DROP_PLAYLIST_LIST   addr=0xf35470 ren=0x10851f0
-func ML_DROP_HIERARCHY       addr=0xf35790 ren=0x1085620
+func ML_DROP_PLAYLIST_LIST   addr=0xf15f00 ren=0x1062070
+func ML_DROP_HIERARCHY       addr=0xf16220 ren=0x10624a0
 
 # meow::MappedObjPtr<usecase::deck::IUsecaseDeck>::link()
 #
@@ -540,7 +540,7 @@ func ML_DROP_HIERARCHY       addr=0xf35790 ren=0x1085620
 # more than either scan will hold. What IS exact is that the deck's own back-cue
 # links this very member immediately before resolving it, so the BL that does it
 # is the identity.
-call CUE_LINK_DECK           addr=0x1823280 from=GATE_BACK_CUE insn=29 ren=0x1a5f520 ren_insn=43
+call CUE_LINK_DECK           addr=0x17fe0b0 from=GATE_BACK_CUE insn=29 ren=0x1a32630 ren_insn=43
 
 # meow::MappedObjPtr<dj_player::ICueLoopSetter>::link()
 #
@@ -549,7 +549,7 @@ call CUE_LINK_DECK           addr=0x1823280 from=GATE_BACK_CUE insn=29 ren=0x1a5
 # first press of a process with nothing to read. CueController::setPoint links it
 # before every use -- but only on the RK3399, where it is a BL. CUE_FACADE_FWD
 # above is the forwarder that still makes that call out of line on both SoCs.
-call CUE_LINK_FACADE         addr=0x800418 from=CUE_FACADE_FWD insn=7 ren=0x851240 ren_insn=13
+call CUE_LINK_FACADE         addr=0x7fcfd8 from=CUE_FACADE_FWD insn=7 ren=0x84e6d0 ren_insn=13
 
 # meow::MappedObjPtr<track_info_repository::ITrackInfoRepositoryCache>::link()
 #
@@ -560,7 +560,7 @@ call CUE_LINK_FACADE         addr=0x800418 from=CUE_FACADE_FWD insn=7 ren=0x8512
 # hundreds of instantiations, and only the call SITE identifies which. The site
 # is the deck's own registerBeatGridOffset, whose doRequest links the cache in
 # its first BL.
-call TIR_CACHE_LINK          addr=0x6e0268 from=BEATGRID_OFF_REGIST_REQ insn=7 ren=0x70f680 ren_insn=11
+call TIR_CACHE_LINK          addr=0x6ddba0 from=BEATGRID_OFF_REGIST_REQ insn=7 ren=0x70cfb0 ren_insn=11
 
 # The two halves of "put a cue somewhere", both on the cue engine reached as
 # *(ICueLoopSetter + 0x70) + 8:
@@ -581,13 +581,13 @@ call TIR_CACHE_LINK          addr=0x6e0268 from=BEATGRID_OFF_REGIST_REQ insn=7 r
 # `desc` is the cue's COLOUR -- three bytes sub_10de100 copies to slot+0x10, and
 # each caller has its own. The hook forwards whatever its caller passed, which
 # is why a preview assign comes out the colour the pad would have had.
-func CUE_SET_HERE            addr=0x10d0730 ren=0x124fc40
+func CUE_SET_HERE            addr=0x10ad670 ren=0x1227fb0
 # gui::detailed_waveform renderBackground. Fills a 4-byte juce::Colour per column
 # into the array renderWaveform_new then lerps the ink against, so this -- not the
 # palette and not the provider -- is the colour the waveform's OUTER EDGE mixes with.
 # Measured live: mode 1, and every entry 0x00000000.
-func WAVE_RENDER_BG          addr=0x1647978 ren=0x183b5c0
-func CUE_SET_AT              addr=0x10cf828 ren=0x124e740
+func WAVE_RENDER_BG          addr=0x1624078 ren=0x1810af0
+func CUE_SET_AT              addr=0x10ac768 ren=0x1226ab0
 
 # EVERY LED THE APP LIGHTS goes through this one call:
 #
@@ -611,7 +611,7 @@ func CUE_SET_AT              addr=0x10cf828 ren=0x124e740
 # The app, not the ioctl the frame eventually leaves through: mods/ has to stand
 # on EP122 alone, it is being separated from the emulation shim, and a syscall
 # hook would not survive that.
-func HUI_LED_WRITE           addr=0x1917e00 ren=0x1b46540
+func HUI_LED_WRITE           addr=0x18f2c40 ren=0x1b19650
 
 
 
@@ -627,7 +627,7 @@ func HUI_LED_WRITE           addr=0x1917e00 ren=0x1b46540
 # 8 instructions is unique in this build but matches twice in v3.13, so the
 # recorded count no longer holds and the symbol is refused. 12 is unique in
 # every RK3399 build from v3.13 to v3.22.
-func SQLITE_UPDATE_EXEC      addr=0xe92b68 min=12 ren=0xfc4d50
+func SQLITE_UPDATE_EXEC      addr=0xe27060 min=12 ren=0xfaf100
 
 # --- mods/db/djdb.c ---
 # The djdb context accessor. Rekordbox media does NOT go through SQL at all --
@@ -635,14 +635,14 @@ func SQLITE_UPDATE_EXEC      addr=0xe92b68 min=12 ren=0xfc4d50
 # to a stick, and it is an accessor rather than a file: a global pointer with an
 # override hook, which is the deck's own instantiated mechanism and the only
 # thing we are willing to reach a library through.
-func DJDB_CONTEXT            addr=0x1c97b50
+func DJDB_CONTEXT            addr=0x1c72a60
 
 # djdb's row insert -- sub_1c66f80(const char *table, int ncols, void **values).
 # Hooked to OBSERVE, because the context accessor above answers NULL from an
 # idle thread: the context is live inside an operation and not between them, so
 # the one moment a mod can look at the media library is while the deck is
 # already using it. Same shape as the SQL side's handle capture.
-func DJDB_ROW_INSERT         addr=0x1c66f80
+func DJDB_ROW_INSERT         addr=0x1c41e90
 
 # The other row operation (seven arguments, same context preamble) and the two
 # transaction openers. Hooked for the same reason and in the same way: any one
@@ -654,9 +654,9 @@ func DJDB_ROW_INSERT         addr=0x1c66f80
 # ("djdbSongHistory", NULL, sub_e696d0, &id, NULL, 0, 0) -- a NULL index meaning
 # all rows, and a filter that compares one column. It was named ROW_UPDATE while
 # its argument roles were unknown; the old name was a guess.
-func DJDB_QUERY              addr=0x1c67420
-func DJDB_TXN_A              addr=0x1c69120
-func DJDB_TXN_B              addr=0x1c691d0
+func DJDB_QUERY              addr=0x1c42330
+func DJDB_TXN_A              addr=0x1c44030
+func DJDB_TXN_B              addr=0x1c440e0
 
 # djdb's page store: every row on the media travels through this pair.
 #
@@ -671,8 +671,8 @@ func DJDB_TXN_B              addr=0x1c691d0
 # storage backend built at 0x1c79300. The write is also the ONE moment a live
 # djdb context is guaranteed -- the deck buffers a whole session in memory and
 # flushes here at EJECT -- so it is where the table registry gets read.
-func DJDB_PAGE_READ          addr=0x1c79270
-func DJDB_PAGE_WRITE         addr=0x1c79110
+func DJDB_PAGE_READ          addr=0x1c54180
+func DJDB_PAGE_WRITE         addr=0x1c54020
 
 # The page manager above the adaptor -- "PGM:PGM", registered by DBService.cpp
 # with PAGESZ=4096 and NBUFS=6144, i.e. a 24 MiB pool of page buffers holding
@@ -687,10 +687,10 @@ func DJDB_PAGE_WRITE         addr=0x1c79110
 # the value. A three-instruction adapter: owner = *row, then tail-calls
 # owner->vtable[0x80](owner, *(*(row+0x18)+8), col, 0). This is the primitive a
 # row filter is built from, and the read side of a playlist walk.
-func DJDB_ROW_COL            addr=0x1c5c1b0
+func DJDB_ROW_COL            addr=0x1c370c0
 
-func DJDB_MARK_DIRTY         addr=0x1c63b20
-func DJDB_MARK_DIRTY_PLAIN   addr=0x1c625b0
+func DJDB_MARK_DIRTY         addr=0x1c3ea30
+func DJDB_MARK_DIRTY_PLAIN   addr=0x1c3d4c0
 
 # TE_DPgm_BufferGetPage(handle, index, &desc) -- names itself in its own error
 # string. Fetches a page into the pool, from the hash table if it is resident
@@ -700,7 +700,7 @@ func DJDB_MARK_DIRTY_PLAIN   addr=0x1c625b0
 # It is hooked for its FIRST ARGUMENT. Every page the deck reads comes through
 # here, so this is the one place a live page-manager handle can be had -- and
 # both BufferGetPage and PageMarkDirty need one.
-func DJDB_BUFFER_GET_PAGE    addr=0x1c647e0
+func DJDB_BUFFER_GET_PAGE    addr=0x1c3f6f0
 
 # THE LIBRARY SERVER'S OWN THREAD, reached by being on it rather than by posting
 # to it. A djdb context is a per-thread DB handle, and no djdb entry point fires
@@ -735,10 +735,10 @@ slot   SRV_MSG_RUN    vtable=SRV_MSG_TASK off=0x10
 # fn at +0x10, arg at +0x18}. The accessor answers *+0x08 when the flag is
 # clear and calls the function when it is set -- read only, to tell "there is no
 # context" apart from "the context is being scoped away from us".
-data DJDB_CONTEXT_SLOT addr=0x66d6a00 from=DJDB_CONTEXT insn=0
+data DJDB_CONTEXT_SLOT addr=0x6699290 from=DJDB_CONTEXT insn=0
 
-data SKIN_FG  addr=0x66d5f08 from=KBD_SHOW   insn=10 ren=0x678f218 ren_insn=14
-data SKIN_BG  addr=0x66d5f68 from=POPUP_CTOR insn=9 ren=0x678f2b0 ren_insn=1
+data SKIN_FG  addr=0x6698798 from=KBD_SHOW   insn=10 ren=0x6748a98 ren_insn=14
+data SKIN_BG  addr=0x66987f8 from=POPUP_CTOR insn=9 ren=0x6748b30 ren_insn=1
 
 # =============================================================================
 # deliberately not static

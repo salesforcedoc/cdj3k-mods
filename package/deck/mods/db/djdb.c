@@ -713,10 +713,10 @@ static void djdb_drain_move(const char *where)
 /* THE CONTEXT IS PER-THREAD, AND THE MESSAGE THREAD IS NOT ONE OF THEM.
  *
  * Worth stating as a measurement rather than as an assumption, because it is the
- * reason this queues at all. djdbGetContext (0x1c97b50) is a redirectable
- * getter: a byte at 0x66d6a00 chooses between a plain global at +0x08 and a
- * registered `fn(arg)` at +0x18. On the deck the byte is 1, so it takes the
- * second -- and that function (0xe5d978) reads a key off the CURRENT THREAD and
+ * reason this queues at all. DJDB_CONTEXT is a redirectable getter: a byte in
+ * the slot DJDB_CONTEXT_SLOT names chooses between a plain global at +0x08 and
+ * a registered `fn(arg)` at +0x18. On the deck the byte is 1, so it takes the
+ * second -- and that registered function reads a key off the CURRENT THREAD and
  * walks a list of {thread, handle} for it. A thread the deck never registered
  * has no handle to find, and the UI thread is one of those.
  *

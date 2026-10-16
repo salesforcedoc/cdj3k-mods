@@ -256,91 +256,91 @@ static const struct ep122_vt_spec {
     const char    *cls;    /* raw Itanium mangled name */
     const char    *base;   /* names a secondary vtable, or NULL */
 } k_ep122_vt[] = {
-    { EP122_BTN, "N3gui18TogglesImageButtonE", NULL },   /* 0x218dde8 */
-    { EP122_TOUCHARIA, "N3gui23WaveformViewTitleWidget9TouchAriaE", NULL },   /* 0x2159178 */
-    { EP122_DISPLAY_REFRESH, "N3gui24DisplayRefleshCycleTimerE", NULL },   /* 0x20b7730 */
-    { EP122_LABEL, "N4juce5LabelE", NULL },   /* 0x25150d0 */
-    { EP122_BROWSE_TITLE, "N3gui17BrowseTitleWidgetE", "N4juce9ComponentE" },   /* 0x2156278 */
-    { EP122_BROWSE_SWITCHES, "N3gui29BrowseDispSwitchButtonsWidgetE", NULL },   /* 0x2154bf8 */
-    { EP122_TRACKLIST, "N3gui15TrackListWidgetE", "N4juce9ComponentE" },   /* 0x211b740 */
-    { EP122_TRACKLIST_HEADER, "N3gui15TrackListHeaderE", NULL },   /* 0x2118fe8 */
-    { EP122_ROWCOMP, "N4meow21TouchableTableListBox7RowCompE", NULL },   /* 0x221d938 */
-    { EP122_LISTBOX_ROW, "N4meow16TouchableListBox3RowE", NULL },   /* 0x221d210 */
-    { EP122_VIEWED_COMP, "N4meow17TouchableViewport15ViewedComponentE", NULL },   /* 0x221cd40 */
-    { EP122_PLAYLIST_VIEW, "N3gui12PlayListViewE", NULL },   /* 0x20c5580 */
-    { EP122_TRACK_LIST_CONDITION, "N13music_library18TrackListConditionE", NULL },   /* 0x1fd2b78 */
-    { EP122_DJSET_MODEL, "N3gui19DJSettingTableModelE", NULL },   /* 0x2152cc0 */
-    { EP122_DJSET_RMODEL, "N3gui28DJSettingRightPaneTableModelE", NULL },   /* 0x21529b0 */
-    { EP122_UTILITY_VIEW, "N3gui11UtilityViewE", NULL },   /* 0x20d9610 */
-    { EP122_SOURCE_SELECT_VIEW, "N3gui16SourceSelectViewE", NULL },   /* 0x20cfe38 */
-    { EP122_UTILITY_AS_MODEL_LISTENER, "N3gui11UtilityViewE", "N3gui19DJSettingTableModel9IListenerE" },   /* 0x20d9b00 */
-    { EP122_UTILITY_AS_KBD_LISTENER, "N3gui11UtilityViewE", "N3gui27SoftwareKeyboardPopupWidget9IListenerE" },   /* 0x20da058 */
-    { EP122_GFX_RENDERER, "N4juce32LowLevelGraphicsSoftwareRendererE", NULL },   /* 0x24fe9c8 */
-    { EP122_SOFT_PIXEL_DATA, "N4juce17SoftwarePixelDataE", NULL },   /* 0x24feb50 */
-    { EP122_JUCE_IMAGECOMPONENT, "N4juce14ImageComponentE", "N4juce9ComponentE" },   /* 0x2514f30 */
-    { EP122_WAVEREPLY_1200PT, "N15db_access_proxy22WaveformReplyer_1200PtE", NULL },   /* 0x1f64260 */
-    { EP122_WAVEREPLY_400PT, "N15db_access_proxy21WaveformReplyer_400PtE", NULL },   /* 0x1f64288 */
-    { EP122_WAVEREPLY_3BAND, "N15db_access_proxy21WaveformReplyer_3BandE", NULL },   /* 0x1f64238 */
-    { EP122_WAVEFORM_REQ_THROWER, "N15db_access_proxy22WaveformRequestThrowerE", NULL },   /* 0x1f64050 */
-    { EP122_PCM_THRU, "N6pcmbuf22ThruSamplingRateBufferE", NULL },   /* 0x1f415e0 */
-    { EP122_PCM_SEQ, "N6pcmbuf9SeqBufferE", NULL },   /* 0x1f32410 */
-    { EP122_PCM_SIMPLE, "N6pcmbuf12SimpleBufferE", NULL },   /* 0x1f40678 */
-    { EP122_PCM_PAGEBUF, "N6pcmbuf7pagebuf10PageBufferINS0_23DefaultPageStaticConfigEEE", NULL },   /* 0x1e11468 */
-    { EP122_PCM_STRETCH, "N11time_domain26ReadableTimeStretchAdapterE", NULL },   /* 0x1f3c728 */
-    { EP122_PCM_PREVIEW, "N14preview_player17RealtimeSRCBufferE", NULL },   /* 0x201b5e8 */
-    { EP122_TSMGR, "N11time_domain26CascadedTimeStretchManagerE", NULL },   /* 0x1f3ce48 */
-    { EP122_PCM_LOADRESULT_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN9dj_player24PcmBufferFunctionHandler12onLoadResultEN6pcmbuf19ILoadResultListener6ResultERKN7trackid7TrackIDERKNS_18RefCountedObjExPtrINS4_10SourceInfoEEEN12audio_format15AudioFormatKindEEUlvE_EE", NULL },   /* 0x1ff7b30 */
-    { EP122_SRC, "N12audio_format19SampleRateConverterE", NULL },   /* 0x1f159e0 */
-    { EP122_AUDIO_READER_FACTORY, "N12audio_format18AudioReaderFactoryE", NULL },   /* 0x1f138d8 */
-    { EP122_READER_FLAC, "N12audio_format12FileReadFlacE", NULL },   /* 0x1f14d18 */
-    { EP122_READER_MP3, "N12audio_format11FileReadMp3E", NULL },   /* 0x1f14208 */
-    { EP122_READER_AAC, "N12audio_format11FileReadAacE", NULL },   /* 0x1f13f30 */
-    { EP122_READER_ALAC, "N12audio_format12FileReadAlacE", NULL },   /* 0x1f14ea8 */
-    { EP122_READER_MP4, "N12audio_format11FileReadMp4E", NULL },   /* 0x1f14908 */
-    { EP122_READER_AIFF, "N12audio_format12FileReadAiffE", NULL },   /* 0x1f13d78 */
-    { EP122_READER_WAV, "N12audio_format11FileReadWavE", NULL },   /* 0x1f13b80 */
-    { EP122_READER_JUCE, "N12audio_format22JuceAudioReaderWrapperE", NULL },   /* 0x1f15318 */
-    { EP122_FACTORY_FLAC, "N12audio_format19FileReadFlacFactoryE", NULL },   /* 0x1f139c0 */
-    { EP122_FACTORY_MP3, "N12audio_format18FileReadMp3FactoryE", NULL },   /* 0x1f13948 */
-    { EP122_FACTORY_AAC, "N12audio_format18FileReadAacFactoryE", NULL },   /* 0x1f13970 */
-    { EP122_FACTORY_ALAC, "N12audio_format19FileReadAlacFactoryE", NULL },   /* 0x1f139e8 */
-    { EP122_FACTORY_MP4, "N12audio_format18FileReadMp4FactoryE", NULL },   /* 0x1f13998 */
-    { EP122_FACTORY_AIFF, "N12audio_format19FileReadAiffFactoryE", NULL },   /* 0x1f13920 */
-    { EP122_FACTORY_WAV, "N12audio_format18FileReadWavFactoryE", NULL },   /* 0x1f138f8 */
-    { EP122_WAVE_ANALYZE_CTRL, "N7usecase14track_analysis32UsecaseWaveformAnalyzeControllerE", NULL },   /* 0x1f0a258 */
-    { EP122_WAVE_REQ_HANDLER, "N17trackinfo_stocker30DetailedWaveformRequestHandlerIN14appnd_trk_info22DetailedWaveform_3BandEEE", NULL },   /* 0x1e9fcd0 */
-    { EP122_WAVE_RECEPTION, "N17trackinfo_stocker30DetailedWaveformRequestHandlerIN14appnd_trk_info22DetailedWaveform_3BandEE9ReceptionE", NULL },   /* 0x1ea0448 */
-    { EP122_GRID_RECEPTION, "N17trackinfo_stocker22BeatGridRequestHandler9ReceptionE", NULL },   /* 0x1e239b0 */
-    { EP122_WAVE_RECEPTION_RGB, "N17trackinfo_stocker30DetailedWaveformRequestHandlerIN14appnd_trk_info20DetailedWaveform_RGBEE9ReceptionE", NULL },   /* 0x1ea0498 */
-    { EP122_WAVE_RECEPTION_BLUE, "N17trackinfo_stocker30DetailedWaveformRequestHandlerIN14appnd_trk_info21DetailedWaveform_BlueEE9ReceptionE", NULL },   /* 0x1ea04e8 */
-    { EP122_WAVE_PROVIDER_3BAND, "N3gui8waveform35DetailedWaveformLayeredDataProviderIN14appnd_trk_info22DetailedWaveform_3BandEEE", NULL },   /* 0x210a948 */
-    { EP122_WAVE_PROVIDER_RGB, "N3gui8waveform28DetailedWaveformDataProviderIN14appnd_trk_info20DetailedWaveform_RGBEEE", NULL },   /* 0x210a8f8 */
-    { EP122_WAVE_PROVIDER_BLUE, "N3gui8waveform28DetailedWaveformDataProviderIN14appnd_trk_info21DetailedWaveform_BlueEEE", NULL },   /* 0x210a8a8 */
-    { EP122_TIR_CACHE, "N21track_info_repository24TrackInfoRepositoryCacheE", NULL },   /* 0x2073f40 */
-    { EP122_BEATGRID_OFF_REGIST, "N17trackinfo_stocker27BeatGridOffsetRegistHandlerE", NULL },   /* 0x1e85b28 */
-    { EP122_DB_FPHANDLE, "N21track_info_repository9CFpHandleE", NULL },   /* 0x20723f8 */
-    { EP122_GATE_PRESSPAD_TASK, "N4meow16AsyncTaskBoxBase9AsyncTaskIZN13input_devices23DeckOperationPadHandlerINS2_15HotCueOperationEE8pressPadERKS4_RKNS2_23DeckInputDevicePriorityEEUlvE_EE", NULL },   /* 0x21f7168 */
-    { EP122_GATE_RELEASEPAD_TASK, "N4meow16AsyncTaskBoxBase9AsyncTaskIZN13input_devices23DeckOperationPadHandlerINS2_15HotCueOperationEE10releasePadERKS4_RKNS2_23DeckInputDevicePriorityEEUlvE_EE", NULL },   /* 0x21f7198 */
-    { EP122_GATE_PLAYPAUSE_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN13input_devices16PlayPauseHandler6pushOnEvEUlvE_EE", NULL },   /* 0x21fbe00 */
-    { EP122_GATE_RELEASEOP_TASK, "N4meow16AsyncTaskBoxBase9AsyncTaskIZN13input_devices23DeckOperationPadHandlerINS2_15HotCueOperationEE16releaseOperationERKS4_RKNS2_23DeckInputDevicePriorityEEUlvE_EE", NULL },   /* 0x21f71f8 */
-    { EP122_GATE_HOTCUE_HANDLER, "N13input_devices13HotCueHandlerE", NULL },   /* 0x21f7128 */
-    { EP122_CUE_CONTROLLER, "N7usecase4deck13CueControllerE", NULL },   /* 0x1e76318 */
-    { EP122_PREVIEW_CTL, "N7usecase4deck17PreviewControllerE", NULL },   /* 0x1e78390 */
-    { EP122_PLAYERINFO_RACK, "N3gui22NormalPlayerInfoWidgetE", NULL },   /* 0x214a208 */
-    { EP122_PLAYERINFO_TIME, "N3gui20PlayerInfoTimeWidgetE", NULL },   /* 0x21326e0 */
-    { EP122_PLAYERINFO_TEMPO, "N3gui21PlayerInfoTempoWidgetE", NULL },   /* 0x21312a8 */
-    { EP122_HUI_MULTICOLOR, "N3hui15HuiIndicatorAbs10MultiColorE", NULL },   /* 0x21e7010 */
-    { EP122_IND_DECK_ID, "N17indicator_control23IndicatorWithIdentifierINS_17DeckIndicatorKindEEE", NULL },   /* 0x208a380 */
-    { EP122_MEMCUE_MEMORY_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN13input_devices16MemoryCueHandler9memoryCueENS2_11TriggerTypeERKNS2_23DeckInputDevicePriorityEEUlvE_EE", NULL },   /* 0x21fb3c0 */
-    { EP122_MEMCUE_DELETE_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN13input_devices16MemoryCueHandler9deleteCueENS2_11TriggerTypeERKNS2_23DeckInputDevicePriorityEEUlvE_EE", NULL },   /* 0x21fb3f0 */
-    { EP122_VINYL_ADJ_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIKZN9dj_player22PlayPauseControlFacade16vinylSpeedAdjustEfNS2_20VinylSpeedAdjustKindEEUlvE_EE", NULL },   /* 0x1ff0230 */
-    { EP122_QUANT_MODE_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN3gui13QuantizeState16onSettingChangedERKN4juce10IdentifierERKN19application_setting14Value_QuantizeEEUlvE_EE", NULL },   /* 0x21d1f00 */
-    { EP122_QUANT_VALUE_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN3gui13QuantizeState16onSettingChangedERKN4juce10IdentifierERKN19application_setting19Value_QuantizeValueEEUlvE_EE", NULL },   /* 0x21d1eb8 */
-    { EP122_SRV_MSG_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN23client_server_framework16ServerThreadBase14receiveMessageEPN11data_stream17DataStreamMessageEjEUlvE_EE", NULL },   /* 0x1f48300 */
-    { EP122_GRIDPANEL, "N3gui17detailed_waveform10GridAdjustE", NULL },   /* 0x20f8a98 */
-    { EP122_GRIDBTN_SNAP, "N3gui18grid_adjust_button14SnapGridButtonE", NULL },   /* 0x20f5970 */
-    { EP122_GRIDBTN_SHIFT, "N3gui18grid_adjust_button15ShiftGridButtonE", NULL },   /* 0x20f69d0 */
-    { EP122_GRIDBTN_RESET, "N3gui18grid_adjust_button11ResetButtonE", NULL },   /* 0x20f7a30 */
+    { EP122_BTN, "N3gui18TogglesImageButtonE", NULL },   /* 0x215c338 */
+    { EP122_TOUCHARIA, "N3gui23WaveformViewTitleWidget9TouchAriaE", NULL },   /* 0x2127968 */
+    { EP122_DISPLAY_REFRESH, "N3gui24DisplayRefleshCycleTimerE", NULL },   /* 0x2086710 */
+    { EP122_LABEL, "N4juce5LabelE", NULL },   /* 0x24e2ac0 */
+    { EP122_BROWSE_TITLE, "N3gui17BrowseTitleWidgetE", "N4juce9ComponentE" },   /* 0x2124a68 */
+    { EP122_BROWSE_SWITCHES, "N3gui29BrowseDispSwitchButtonsWidgetE", NULL },   /* 0x21233e8 */
+    { EP122_TRACKLIST, "N3gui15TrackListWidgetE", "N4juce9ComponentE" },   /* 0x20ea290 */
+    { EP122_TRACKLIST_HEADER, "N3gui15TrackListHeaderE", NULL },   /* 0x20e7b38 */
+    { EP122_ROWCOMP, "N4meow21TouchableTableListBox7RowCompE", NULL },   /* 0x21eb308 */
+    { EP122_LISTBOX_ROW, "N4meow16TouchableListBox3RowE", NULL },   /* 0x21eabe0 */
+    { EP122_VIEWED_COMP, "N4meow17TouchableViewport15ViewedComponentE", NULL },   /* 0x21ea710 */
+    { EP122_PLAYLIST_VIEW, "N3gui12PlayListViewE", NULL },   /* 0x2094540 */
+    { EP122_TRACK_LIST_CONDITION, "N13music_library18TrackListConditionE", NULL },   /* 0x1fa2df8 */
+    { EP122_DJSET_MODEL, "N3gui19DJSettingTableModelE", NULL },   /* 0x2121670 */
+    { EP122_DJSET_RMODEL, "N3gui28DJSettingRightPaneTableModelE", NULL },   /* 0x2121360 */
+    { EP122_UTILITY_VIEW, "N3gui11UtilityViewE", NULL },   /* 0x20a82f0 */
+    { EP122_SOURCE_SELECT_VIEW, "N3gui16SourceSelectViewE", NULL },   /* 0x209ec78 */
+    { EP122_UTILITY_AS_MODEL_LISTENER, "N3gui11UtilityViewE", "N3gui19DJSettingTableModel9IListenerE" },   /* 0x20a87e0 */
+    { EP122_UTILITY_AS_KBD_LISTENER, "N3gui11UtilityViewE", "N3gui27SoftwareKeyboardPopupWidget9IListenerE" },   /* 0x20a8d38 */
+    { EP122_GFX_RENDERER, "N4juce32LowLevelGraphicsSoftwareRendererE", NULL },   /* 0x24cc3b8 */
+    { EP122_SOFT_PIXEL_DATA, "N4juce17SoftwarePixelDataE", NULL },   /* 0x24cc540 */
+    { EP122_JUCE_IMAGECOMPONENT, "N4juce14ImageComponentE", "N4juce9ComponentE" },   /* 0x24e2920 */
+    { EP122_WAVEREPLY_1200PT, "N15db_access_proxy22WaveformReplyer_1200PtE", NULL },   /* 0x1f36850 */
+    { EP122_WAVEREPLY_400PT, "N15db_access_proxy21WaveformReplyer_400PtE", NULL },   /* 0x1f36878 */
+    { EP122_WAVEREPLY_3BAND, "N15db_access_proxy21WaveformReplyer_3BandE", NULL },   /* 0x1f36828 */
+    { EP122_WAVEFORM_REQ_THROWER, "N15db_access_proxy22WaveformRequestThrowerE", NULL },   /* 0x1f36640 */
+    { EP122_PCM_THRU, "N6pcmbuf22ThruSamplingRateBufferE", NULL },   /* 0x1f13ca0 */
+    { EP122_PCM_SEQ, "N6pcmbuf9SeqBufferE", NULL },   /* 0x1f04790 */
+    { EP122_PCM_SIMPLE, "N6pcmbuf12SimpleBufferE", NULL },   /* 0x1f12d38 */
+    { EP122_PCM_PAGEBUF, "N6pcmbuf7pagebuf10PageBufferINS0_23DefaultPageStaticConfigEEE", NULL },   /* 0x1de51a8 */
+    { EP122_PCM_STRETCH, "N11time_domain26ReadableTimeStretchAdapterE", NULL },   /* 0x1f0ede8 */
+    { EP122_PCM_PREVIEW, "N14preview_player17RealtimeSRCBufferE", NULL },   /* 0x1feb3e8 */
+    { EP122_TSMGR, "N11time_domain26CascadedTimeStretchManagerE", NULL },   /* 0x1f0f508 */
+    { EP122_PCM_LOADRESULT_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN9dj_player24PcmBufferFunctionHandler12onLoadResultEN6pcmbuf19ILoadResultListener6ResultERKN7trackid7TrackIDERKNS_18RefCountedObjExPtrINS4_10SourceInfoEEEN12audio_format15AudioFormatKindEEUlvE_EE", NULL },   /* 0x1fc7d70 */
+    { EP122_SRC, "N12audio_format19SampleRateConverterE", NULL },   /* 0x1ee7d60 */
+    { EP122_AUDIO_READER_FACTORY, "N12audio_format18AudioReaderFactoryE", NULL },   /* 0x1ee5c58 */
+    { EP122_READER_FLAC, "N12audio_format12FileReadFlacE", NULL },   /* 0x1ee7098 */
+    { EP122_READER_MP3, "N12audio_format11FileReadMp3E", NULL },   /* 0x1ee6588 */
+    { EP122_READER_AAC, "N12audio_format11FileReadAacE", NULL },   /* 0x1ee62b0 */
+    { EP122_READER_ALAC, "N12audio_format12FileReadAlacE", NULL },   /* 0x1ee7228 */
+    { EP122_READER_MP4, "N12audio_format11FileReadMp4E", NULL },   /* 0x1ee6c88 */
+    { EP122_READER_AIFF, "N12audio_format12FileReadAiffE", NULL },   /* 0x1ee60f8 */
+    { EP122_READER_WAV, "N12audio_format11FileReadWavE", NULL },   /* 0x1ee5f00 */
+    { EP122_READER_JUCE, "N12audio_format22JuceAudioReaderWrapperE", NULL },   /* 0x1ee7698 */
+    { EP122_FACTORY_FLAC, "N12audio_format19FileReadFlacFactoryE", NULL },   /* 0x1ee5d40 */
+    { EP122_FACTORY_MP3, "N12audio_format18FileReadMp3FactoryE", NULL },   /* 0x1ee5cc8 */
+    { EP122_FACTORY_AAC, "N12audio_format18FileReadAacFactoryE", NULL },   /* 0x1ee5cf0 */
+    { EP122_FACTORY_ALAC, "N12audio_format19FileReadAlacFactoryE", NULL },   /* 0x1ee5d68 */
+    { EP122_FACTORY_MP4, "N12audio_format18FileReadMp4FactoryE", NULL },   /* 0x1ee5d18 */
+    { EP122_FACTORY_AIFF, "N12audio_format19FileReadAiffFactoryE", NULL },   /* 0x1ee5ca0 */
+    { EP122_FACTORY_WAV, "N12audio_format18FileReadWavFactoryE", NULL },   /* 0x1ee5c78 */
+    { EP122_WAVE_ANALYZE_CTRL, "N7usecase14track_analysis32UsecaseWaveformAnalyzeControllerE", NULL },   /* 0x1edc5d0 */
+    { EP122_WAVE_REQ_HANDLER, "N17trackinfo_stocker30DetailedWaveformRequestHandlerIN14appnd_trk_info22DetailedWaveform_3BandEEE", NULL },   /* 0x1e72ff0 */
+    { EP122_WAVE_RECEPTION, "N17trackinfo_stocker30DetailedWaveformRequestHandlerIN14appnd_trk_info22DetailedWaveform_3BandEE9ReceptionE", NULL },   /* 0x1e73768 */
+    { EP122_GRID_RECEPTION, "N17trackinfo_stocker22BeatGridRequestHandler9ReceptionE", NULL },   /* 0x1df76f0 */
+    { EP122_WAVE_RECEPTION_RGB, "N17trackinfo_stocker30DetailedWaveformRequestHandlerIN14appnd_trk_info20DetailedWaveform_RGBEE9ReceptionE", NULL },   /* 0x1e737b8 */
+    { EP122_WAVE_RECEPTION_BLUE, "N17trackinfo_stocker30DetailedWaveformRequestHandlerIN14appnd_trk_info21DetailedWaveform_BlueEE9ReceptionE", NULL },   /* 0x1e73808 */
+    { EP122_WAVE_PROVIDER_3BAND, "N3gui8waveform35DetailedWaveformLayeredDataProviderIN14appnd_trk_info22DetailedWaveform_3BandEEE", NULL },   /* 0x20d9478 */
+    { EP122_WAVE_PROVIDER_RGB, "N3gui8waveform28DetailedWaveformDataProviderIN14appnd_trk_info20DetailedWaveform_RGBEEE", NULL },   /* 0x20d9428 */
+    { EP122_WAVE_PROVIDER_BLUE, "N3gui8waveform28DetailedWaveformDataProviderIN14appnd_trk_info21DetailedWaveform_BlueEEE", NULL },   /* 0x20d93d8 */
+    { EP122_TIR_CACHE, "N21track_info_repository24TrackInfoRepositoryCacheE", NULL },   /* 0x20439a0 */
+    { EP122_BEATGRID_OFF_REGIST, "N17trackinfo_stocker27BeatGridOffsetRegistHandlerE", NULL },   /* 0x1e58e48 */
+    { EP122_DB_FPHANDLE, "N21track_info_repository9CFpHandleE", NULL },   /* 0x2041e58 */
+    { EP122_GATE_PRESSPAD_TASK, "N4meow16AsyncTaskBoxBase9AsyncTaskIZN13input_devices23DeckOperationPadHandlerINS2_15HotCueOperationEE8pressPadERKS4_RKNS2_23DeckInputDevicePriorityEEUlvE_EE", NULL },   /* 0x21c4b38 */
+    { EP122_GATE_RELEASEPAD_TASK, "N4meow16AsyncTaskBoxBase9AsyncTaskIZN13input_devices23DeckOperationPadHandlerINS2_15HotCueOperationEE10releasePadERKS4_RKNS2_23DeckInputDevicePriorityEEUlvE_EE", NULL },   /* 0x21c4b68 */
+    { EP122_GATE_PLAYPAUSE_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN13input_devices16PlayPauseHandler6pushOnEvEUlvE_EE", NULL },   /* 0x21c97d0 */
+    { EP122_GATE_RELEASEOP_TASK, "N4meow16AsyncTaskBoxBase9AsyncTaskIZN13input_devices23DeckOperationPadHandlerINS2_15HotCueOperationEE16releaseOperationERKS4_RKNS2_23DeckInputDevicePriorityEEUlvE_EE", NULL },   /* 0x21c4bc8 */
+    { EP122_GATE_HOTCUE_HANDLER, "N13input_devices13HotCueHandlerE", NULL },   /* 0x21c4af8 */
+    { EP122_CUE_CONTROLLER, "N7usecase4deck13CueControllerE", NULL },   /* 0x1e49638 */
+    { EP122_PREVIEW_CTL, "N7usecase4deck17PreviewControllerE", NULL },   /* 0x1e4b6b0 */
+    { EP122_PLAYERINFO_RACK, "N3gui22NormalPlayerInfoWidgetE", NULL },   /* 0x2118d58 */
+    { EP122_PLAYERINFO_TIME, "N3gui20PlayerInfoTimeWidgetE", NULL },   /* 0x2101230 */
+    { EP122_PLAYERINFO_TEMPO, "N3gui21PlayerInfoTempoWidgetE", NULL },   /* 0x20ffdf8 */
+    { EP122_HUI_MULTICOLOR, "N3hui15HuiIndicatorAbs10MultiColorE", NULL },   /* 0x21b4b50 */
+    { EP122_IND_DECK_ID, "N17indicator_control23IndicatorWithIdentifierINS_17DeckIndicatorKindEEE", NULL },   /* 0x2059dd8 */
+    { EP122_MEMCUE_MEMORY_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN13input_devices16MemoryCueHandler9memoryCueENS2_11TriggerTypeERKNS2_23DeckInputDevicePriorityEEUlvE_EE", NULL },   /* 0x21c8d90 */
+    { EP122_MEMCUE_DELETE_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN13input_devices16MemoryCueHandler9deleteCueENS2_11TriggerTypeERKNS2_23DeckInputDevicePriorityEEUlvE_EE", NULL },   /* 0x21c8dc0 */
+    { EP122_VINYL_ADJ_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIKZN9dj_player22PlayPauseControlFacade16vinylSpeedAdjustEfNS2_20VinylSpeedAdjustKindEEUlvE_EE", NULL },   /* 0x1fc0470 */
+    { EP122_QUANT_MODE_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN3gui13QuantizeState16onSettingChangedERKN4juce10IdentifierERKN19application_setting14Value_QuantizeEEUlvE_EE", NULL },   /* 0x219fa40 */
+    { EP122_QUANT_VALUE_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN3gui13QuantizeState16onSettingChangedERKN4juce10IdentifierERKN19application_setting19Value_QuantizeValueEEUlvE_EE", NULL },   /* 0x219f9f8 */
+    { EP122_SRV_MSG_TASK, "*N4meow16AsyncTaskBoxBase9AsyncTaskIZN23client_server_framework16ServerThreadBase14receiveMessageEPN11data_stream17DataStreamMessageEjEUlvE_EE", NULL },   /* 0x1f1a9c0 */
+    { EP122_GRIDPANEL, "N3gui17detailed_waveform10GridAdjustE", NULL },   /* 0x20c75c8 */
+    { EP122_GRIDBTN_SNAP, "N3gui18grid_adjust_button14SnapGridButtonE", NULL },   /* 0x20c44a0 */
+    { EP122_GRIDBTN_SHIFT, "N3gui18grid_adjust_button15ShiftGridButtonE", NULL },   /* 0x20c5500 */
+    { EP122_GRIDBTN_RESET, "N3gui18grid_adjust_button11ResetButtonE", NULL },   /* 0x20c6560 */
 };
 #define EP122_N_VT 85
 
@@ -350,72 +350,72 @@ static const struct ep122_slot_spec {
     unsigned short vt;     /* the vtable symbol it lives in */
     unsigned short off;    /* byte offset from the address point */
 } k_ep122_slot[] = {
-    { EP122_READER_FLAC_OPEN, EP122_READER_FLAC, 0x10 },   /* 0xa84a48 */
-    { EP122_READER_FLAC_GETRATE, EP122_READER_FLAC, 0x50 },   /* 0xa3f2a8 */
-    { EP122_SRC_DTOR, EP122_SRC, 0x0 },   /* 0xa52440 */
-    { EP122_SRC_SETSOURCE, EP122_SRC, 0x10 },   /* 0xa51c80 */
-    { EP122_SRC_FILEREAD, EP122_SRC, 0x18 },   /* 0xa53d70 */
-    { EP122_LABEL_PAINT, EP122_LABEL, 0xd0 },   /* 0x1b96dd0 */
-    { EP122_BTN_MOUSEDOWN, EP122_BTN, 0x28 },   /* 0x1650fa8 */
-    { EP122_TOUCHARIA_MOUSEDOWN, EP122_TOUCHARIA, 0x28 },   /* 0x15c8160 */
-    { EP122_TOUCHARIA_PAINT, EP122_TOUCHARIA, 0xd0 },   /* 0x1b4ea20 */
-    { EP122_DISPLAY_REFRESH_TIMERCB, EP122_DISPLAY_REFRESH, 0x10 },   /* 0x13c0b38 */
-    { EP122_BROWSE_TITLE_PAINT, EP122_BROWSE_TITLE, 0xd0 },   /* 0x16515f0 */
-    { EP122_ROWCOMP_MOUSEDOWN, EP122_ROWCOMP, 0x28 },   /* 0x1906410 */
-    { EP122_ROWCOMP_MOUSEDRAG, EP122_ROWCOMP, 0x30 },   /* 0x19062e0 */
-    { EP122_ROWCOMP_MOUSEUP, EP122_ROWCOMP, 0x38 },   /* 0x19061d0 */
-    { EP122_ROWCOMP_PAINT, EP122_ROWCOMP, 0xd0 },   /* 0x190f6a0 */
-    { EP122_DJSET_NUMROWS, EP122_DJSET_MODEL, 0x10 },   /* 0x159c558 */
-    { EP122_DJSET_PAINTCELL, EP122_DJSET_MODEL, 0x20 },   /* 0x159cb48 */
-    { EP122_DJSET_SELCHANGED, EP122_DJSET_MODEL, 0x60 },   /* 0x159c580 */
-    { EP122_DJSET_RNUMROWS, EP122_DJSET_RMODEL, 0x10 },   /* 0x159b1d0 */
-    { EP122_DJSET_RCELLCLICK, EP122_DJSET_RMODEL, 0x30 },   /* 0x159b3a0 */
-    { EP122_DJSET_RREFRESH, EP122_DJSET_RMODEL, 0x28 },   /* 0x159b988 */
-    { EP122_DJSET_RSELCHANGED, EP122_DJSET_RMODEL, 0x60 },   /* 0x159b1d8 */
-    { EP122_VIEW_MOUSEDOWN, EP122_UTILITY_VIEW, 0x28 },   /* 0x143cd88 */
-    { EP122_VIEW_TOUCHSEL, EP122_UTILITY_VIEW, 0x178 },   /* 0x1448088 */
-    { EP122_VIEW_INPUT, EP122_UTILITY_VIEW, 0x190 },   /* 0x144af70 */
-    { EP122_VIEW_SWITCH, EP122_UTILITY_VIEW, 0x198 },   /* 0x1447b10 */
-    { EP122_SOURCE_SELECT_BUILD, EP122_SOURCE_SELECT_VIEW, 0x178 },   /* 0x14109f0 */
-    { EP122_VIEW_ROWCHANGED, EP122_UTILITY_AS_MODEL_LISTENER, 0x0 },   /* 0x143ced0 */
-    { EP122_VIEW_KBD_KEY, EP122_UTILITY_AS_KBD_LISTENER, 0x0 },   /* 0x144b358 */
-    { EP122_GFX_SETFILL, EP122_GFX_RENDERER, 0x90 },   /* 0x1b12620 */
-    { EP122_GFX_DRAWIMAGE, EP122_GFX_RENDERER, 0xc8 },   /* 0x1b1c8e0 */
-    { EP122_IMAGECOMP_PAINT, EP122_JUCE_IMAGECOMPONENT, 0xd0 },   /* 0x1b53ee0 */
-    { EP122_PCM_THRU_READ, EP122_PCM_THRU, 0x10 },   /* 0xb19de8 */
-    { EP122_PCM_SEQ_READ, EP122_PCM_SEQ, 0x10 },   /* 0xab6988 */
-    { EP122_PCM_SIMPLE_READ, EP122_PCM_SIMPLE, 0x10 },   /* 0xb12178 */
-    { EP122_PCM_PAGEBUF_READ, EP122_PCM_PAGEBUF, 0x10 },   /* 0x6ab128 */
-    { EP122_PCM_STRETCH_READ, EP122_PCM_STRETCH, 0x10 },   /* 0xaea7f8 */
-    { EP122_PCM_LOADRESULT_RUN, EP122_PCM_LOADRESULT_TASK, 0x10 },   /* 0x107e3d8 */
-    { EP122_PCM_PREVIEW_READ, EP122_PCM_PREVIEW, 0x10 },   /* 0x11767f8 */
-    { EP122_TSMGR_OPERATE, EP122_TSMGR, 0x98 },   /* 0xaecfc0 */
-    { EP122_TSMGR_SETSOURCE, EP122_TSMGR, 0x38 },   /* 0xaec298 */
-    { EP122_WAVE_DOREQUEST, EP122_WAVE_REQ_HANDLER, 0x10 },   /* 0x890068 */
-    { EP122_GRID_RECEPTION_REPLY, EP122_GRID_RECEPTION, 0x18 },   /* 0x702f30 */
-    { EP122_WAVE_RECEPTION_REPLY, EP122_WAVE_RECEPTION, 0x28 },   /* 0x88eec8 */
-    { EP122_WAVE_RECEPTION_RGB_REPLY, EP122_WAVE_RECEPTION_RGB, 0x30 },   /* 0x88e6f8 */
-    { EP122_WAVE_RECEPTION_BLUE_REPLY, EP122_WAVE_RECEPTION_BLUE, 0x38 },   /* 0x88e248 */
-    { EP122_WAVE_ANALYZE, EP122_WAVE_ANALYZE_CTRL, 0x10 },   /* 0x9fece8 */
-    { EP122_BEATGRID_OFF_REGIST_REQ, EP122_BEATGRID_OFF_REGIST, 0x10 },   /* 0x8341e0 */
-    { EP122_WAVEFORM_THROW, EP122_WAVEFORM_REQ_THROWER, 0x10 },   /* 0xbe3598 */
-    { EP122_GATE_PRESSPAD_RUN, EP122_GATE_PRESSPAD_TASK, 0x10 },   /* 0x183cf98 */
-    { EP122_GATE_RELEASEPAD_RUN, EP122_GATE_RELEASEPAD_TASK, 0x10 },   /* 0x183d130 */
-    { EP122_GATE_PLAYPAUSE_RUN, EP122_GATE_PLAYPAUSE_TASK, 0x10 },   /* 0x185ae50 */
-    { EP122_GATE_BACK_CUE, EP122_GATE_RELEASEOP_TASK, 0x10 },   /* 0x183d7d0 */
-    { EP122_GATE_PADREL_SENTINEL, EP122_GATE_HOTCUE_HANDLER, 0x20 },   /* 0x183b348 */
-    { EP122_MEMCUE_MEMORY_RUN, EP122_MEMCUE_MEMORY_TASK, 0x10 },   /* 0x1854610 */
-    { EP122_MEMCUE_DELETE_RUN, EP122_MEMCUE_DELETE_TASK, 0x10 },   /* 0x18554f8 */
-    { EP122_VINYL_ADJ_RUN, EP122_VINYL_ADJ_TASK, 0x10 },   /* 0x1055850 */
-    { EP122_QUANT_MODE_RUN, EP122_QUANT_MODE_TASK, 0x10 },   /* 0x17b7f90 */
-    { EP122_QUANT_VALUE_RUN, EP122_QUANT_VALUE_TASK, 0x10 },   /* 0x17b7f58 */
-    { EP122_CUE_CUEING, EP122_CUE_CONTROLLER, 0x10 },   /* 0x7f8ac0 */
-    { EP122_CUE_SETPOINT, EP122_CUE_CONTROLLER, 0x18 },   /* 0x7f8b08 */
-    { EP122_CUE_FACADE_FWD, EP122_CUE_CONTROLLER, 0xa0 },   /* 0x7f8d18 */
-    { EP122_PREVIEW_SET, EP122_PREVIEW_CTL, 0x10 },   /* 0x80acf8 */
-    { EP122_PREVIEW_CLEAR, EP122_PREVIEW_CTL, 0x18 },   /* 0x80acc0 */
-    { EP122_HUI_MC_UPDATE, EP122_HUI_MULTICOLOR, 0x10 },   /* 0x1803ae0 */
-    { EP122_SRV_MSG_RUN, EP122_SRV_MSG_TASK, 0x10 },   /* 0xb3c9d0 */
+    { EP122_READER_FLAC_OPEN, EP122_READER_FLAC, 0x10 },   /* 0xa7e518 */
+    { EP122_READER_FLAC_GETRATE, EP122_READER_FLAC, 0x50 },   /* 0xa38d60 */
+    { EP122_SRC_DTOR, EP122_SRC, 0x0 },   /* 0xa4bf10 */
+    { EP122_SRC_SETSOURCE, EP122_SRC, 0x10 },   /* 0xa4b750 */
+    { EP122_SRC_FILEREAD, EP122_SRC, 0x18 },   /* 0xa4d840 */
+    { EP122_LABEL_PAINT, EP122_LABEL, 0xd0 },   /* 0x1b71ce0 */
+    { EP122_BTN_MOUSEDOWN, EP122_BTN, 0x28 },   /* 0x162d6a8 */
+    { EP122_TOUCHARIA_MOUSEDOWN, EP122_TOUCHARIA, 0x28 },   /* 0x15a4d10 */
+    { EP122_TOUCHARIA_PAINT, EP122_TOUCHARIA, 0xd0 },   /* 0x1b29930 */
+    { EP122_DISPLAY_REFRESH_TIMERCB, EP122_DISPLAY_REFRESH, 0x10 },   /* 0x139d1a0 */
+    { EP122_BROWSE_TITLE_PAINT, EP122_BROWSE_TITLE, 0xd0 },   /* 0x162dcf0 */
+    { EP122_ROWCOMP_MOUSEDOWN, EP122_ROWCOMP, 0x28 },   /* 0x18e1250 */
+    { EP122_ROWCOMP_MOUSEDRAG, EP122_ROWCOMP, 0x30 },   /* 0x18e1120 */
+    { EP122_ROWCOMP_MOUSEUP, EP122_ROWCOMP, 0x38 },   /* 0x18e1010 */
+    { EP122_ROWCOMP_PAINT, EP122_ROWCOMP, 0xd0 },   /* 0x18ea4e0 */
+    { EP122_DJSET_NUMROWS, EP122_DJSET_MODEL, 0x10 },   /* 0x1578ce8 */
+    { EP122_DJSET_PAINTCELL, EP122_DJSET_MODEL, 0x20 },   /* 0x15792d8 */
+    { EP122_DJSET_SELCHANGED, EP122_DJSET_MODEL, 0x60 },   /* 0x1578d10 */
+    { EP122_DJSET_RNUMROWS, EP122_DJSET_RMODEL, 0x10 },   /* 0x1577960 */
+    { EP122_DJSET_RCELLCLICK, EP122_DJSET_RMODEL, 0x30 },   /* 0x1577b30 */
+    { EP122_DJSET_RREFRESH, EP122_DJSET_RMODEL, 0x28 },   /* 0x1578118 */
+    { EP122_DJSET_RSELCHANGED, EP122_DJSET_RMODEL, 0x60 },   /* 0x1577968 */
+    { EP122_VIEW_MOUSEDOWN, EP122_UTILITY_VIEW, 0x28 },   /* 0x14194c8 */
+    { EP122_VIEW_TOUCHSEL, EP122_UTILITY_VIEW, 0x178 },   /* 0x14247f0 */
+    { EP122_VIEW_INPUT, EP122_UTILITY_VIEW, 0x190 },   /* 0x1427688 */
+    { EP122_VIEW_SWITCH, EP122_UTILITY_VIEW, 0x198 },   /* 0x1424278 */
+    { EP122_SOURCE_SELECT_BUILD, EP122_SOURCE_SELECT_VIEW, 0x178 },   /* 0x13ed030 */
+    { EP122_VIEW_ROWCHANGED, EP122_UTILITY_AS_MODEL_LISTENER, 0x0 },   /* 0x1419610 */
+    { EP122_VIEW_KBD_KEY, EP122_UTILITY_AS_KBD_LISTENER, 0x0 },   /* 0x1427a70 */
+    { EP122_GFX_SETFILL, EP122_GFX_RENDERER, 0x90 },   /* 0x1aed530 */
+    { EP122_GFX_DRAWIMAGE, EP122_GFX_RENDERER, 0xc8 },   /* 0x1af77f0 */
+    { EP122_IMAGECOMP_PAINT, EP122_JUCE_IMAGECOMPONENT, 0xd0 },   /* 0x1b2edf0 */
+    { EP122_PCM_THRU_READ, EP122_PCM_THRU, 0x10 },   /* 0xb14dd8 */
+    { EP122_PCM_SEQ_READ, EP122_PCM_SEQ, 0x10 },   /* 0xab0600 */
+    { EP122_PCM_SIMPLE_READ, EP122_PCM_SIMPLE, 0x10 },   /* 0xb0d168 */
+    { EP122_PCM_PAGEBUF_READ, EP122_PCM_PAGEBUF, 0x10 },   /* 0x6a8a60 */
+    { EP122_PCM_STRETCH_READ, EP122_PCM_STRETCH, 0x10 },   /* 0xae57e8 */
+    { EP122_PCM_LOADRESULT_RUN, EP122_PCM_LOADRESULT_TASK, 0x10 },   /* 0x105b3a8 */
+    { EP122_PCM_PREVIEW_READ, EP122_PCM_PREVIEW, 0x10 },   /* 0x11529d8 */
+    { EP122_TSMGR_OPERATE, EP122_TSMGR, 0x98 },   /* 0xae7fb0 */
+    { EP122_TSMGR_SETSOURCE, EP122_TSMGR, 0x38 },   /* 0xae7288 */
+    { EP122_WAVE_DOREQUEST, EP122_WAVE_REQ_HANDLER, 0x10 },   /* 0x88c938 */
+    { EP122_GRID_RECEPTION_REPLY, EP122_GRID_RECEPTION, 0x18 },   /* 0x7006f0 */
+    { EP122_WAVE_RECEPTION_REPLY, EP122_WAVE_RECEPTION, 0x28 },   /* 0x88b798 */
+    { EP122_WAVE_RECEPTION_RGB_REPLY, EP122_WAVE_RECEPTION_RGB, 0x30 },   /* 0x88afc8 */
+    { EP122_WAVE_RECEPTION_BLUE_REPLY, EP122_WAVE_RECEPTION_BLUE, 0x38 },   /* 0x88ab18 */
+    { EP122_WAVE_ANALYZE, EP122_WAVE_ANALYZE_CTRL, 0x10 },   /* 0x9f8738 */
+    { EP122_BEATGRID_OFF_REGIST_REQ, EP122_BEATGRID_OFF_REGIST, 0x10 },   /* 0x830da0 */
+    { EP122_WAVEFORM_THROW, EP122_WAVEFORM_REQ_THROWER, 0x10 },   /* 0xbde7e0 */
+    { EP122_GATE_PRESSPAD_RUN, EP122_GATE_PRESSPAD_TASK, 0x10 },   /* 0x1817dc8 */
+    { EP122_GATE_RELEASEPAD_RUN, EP122_GATE_RELEASEPAD_TASK, 0x10 },   /* 0x1817f60 */
+    { EP122_GATE_PLAYPAUSE_RUN, EP122_GATE_PLAYPAUSE_TASK, 0x10 },   /* 0x1835c80 */
+    { EP122_GATE_BACK_CUE, EP122_GATE_RELEASEOP_TASK, 0x10 },   /* 0x1818600 */
+    { EP122_GATE_PADREL_SENTINEL, EP122_GATE_HOTCUE_HANDLER, 0x20 },   /* 0x1816178 */
+    { EP122_MEMCUE_MEMORY_RUN, EP122_MEMCUE_MEMORY_TASK, 0x10 },   /* 0x182f440 */
+    { EP122_MEMCUE_DELETE_RUN, EP122_MEMCUE_DELETE_TASK, 0x10 },   /* 0x1830328 */
+    { EP122_VINYL_ADJ_RUN, EP122_VINYL_ADJ_TASK, 0x10 },   /* 0x1032900 */
+    { EP122_QUANT_MODE_RUN, EP122_QUANT_MODE_TASK, 0x10 },   /* 0x1792f80 */
+    { EP122_QUANT_VALUE_RUN, EP122_QUANT_VALUE_TASK, 0x10 },   /* 0x1792f48 */
+    { EP122_CUE_CUEING, EP122_CUE_CONTROLLER, 0x10 },   /* 0x7f5680 */
+    { EP122_CUE_SETPOINT, EP122_CUE_CONTROLLER, 0x18 },   /* 0x7f56c8 */
+    { EP122_CUE_FACADE_FWD, EP122_CUE_CONTROLLER, 0xa0 },   /* 0x7f58d8 */
+    { EP122_PREVIEW_SET, EP122_PREVIEW_CTL, 0x10 },   /* 0x8078b8 */
+    { EP122_PREVIEW_CLEAR, EP122_PREVIEW_CTL, 0x18 },   /* 0x807880 */
+    { EP122_HUI_MC_UPDATE, EP122_HUI_MULTICOLOR, 0x10 },   /* 0x17de930 */
+    { EP122_SRV_MSG_RUN, EP122_SRV_MSG_TASK, 0x10 },   /* 0xb379b8 */
 };
 #define EP122_N_SLOT 66
 
@@ -432,129 +432,129 @@ static const struct ep122_fn_spec {
     unsigned short akey;   /* 16-bit digest of that word, to index on */
     unsigned long long digest;  /* FNV-1a of the masked window */
 } k_ep122_fn[] = {
-    { EP122_JUCE_STRING_CTOR_CSTR, 0xffff, 0, 0, 0, 64, 0, 0x2ea9, 0x5074652792dd9235ULL },   /* 0x1a55060 */
-    { EP122_JUCE_STRING_CTOR_CSTR, 0xffff, 0, 0, 0, 48, 0, 0xf5ea, 0x561d2a9c3f19ad56ULL },   /* 0x1c7e560 */
-    { EP122_JUCE_STRING_DTOR, 0xffff, 0, 0, 0, 12, 0, 0x9540, 0x95db38201bc0b734ULL },   /* 0x1a1d9b0 */
-    { EP122_JUCE_STRING_DTOR, 0xffff, 0, 0, 0, 8, 0, 0x9540, 0xe986204b293a3a41ULL },   /* 0x1c5bb10 */
-    { EP122_JUCE_STRING_CTOR_EMPTY, 0xffff, 0, 0, 0, 24, 3, 0xc737, 0xff062497f36aaa7bULL },   /* 0x1a308c0 */
-    { EP122_JUCE_STRING_CTOR_EMPTY, 0xffff, 0, 0, 0, 12, 3, 0xc737, 0xef12a27908e97c9eULL },   /* 0x1c5d9e0 */
-    { EP122_JUCE_VAR_CTOR_STRING, 0xffff, 0, 0, 0, 8, 3, 0x656e, 0xd334811eb15d6a61ULL },   /* 0x1a23300 */
-    { EP122_JUCE_VAR_CTOR_STRING, 0xffff, 0, 0, 0, 8, 0, 0xd50d, 0x0c6bfd2197b507d5ULL },   /* 0x1c4fa50 */
-    { EP122_JUCE_VAR_DTOR, 0xffff, 0, 0, 0, 8, 0, 0xbb6e, 0x9cb1ae117261b3cdULL },   /* 0x1a1ac10 */
-    { EP122_JUCE_VALUE_SETVALUE, 0xffff, 0, 0, 0, 8, 0, 0xd1ae, 0xabe529d7cd25d44bULL },   /* 0x1aa86e0 */
-    { EP122_JUCE_FONT_DTOR, 0xffff, 0, 0, 0, 16, 0, 0x9540, 0xb8ee7f97b33f45faULL },   /* 0x1afa8a0 */
-    { EP122_JUCE_FONT_DTOR, 0xffff, 0, 0, 0, 8, 0, 0x9540, 0x69bc9088b370cb8fULL },   /* 0x1d2d530 */
-    { EP122_JUCE_GFX_SETFONT, 0xffff, 0, 0, 0, 24, 0, 0xb4f8, 0x124b7b34ab2d2b6aULL },   /* 0x1ad0840 */
-    { EP122_JUCE_GFX_SETFONT, 0xffff, 0, 0, 0, 16, 0, 0x007e, 0xb72d8104f7e9ae95ULL },   /* 0x1cf9ae0 */
-    { EP122_JUCE_GFX_SETCOLOUR, 0xffff, 0, 0, 0, 8, 0, 0x47e5, 0x6f82d8389eed5f94ULL },   /* 0x1ad03f0 */
-    { EP122_JUCE_GFX_SETCOLOUR, 0xffff, 0, 0, 0, 8, 0, 0x6eb6, 0xdfc9507ab80a701aULL },   /* 0x1d28110 */
-    { EP122_JUCE_GFX_FILLRECT_INT, 0xffff, 0, 0, 0, 8, 0, 0x3567, 0x46e7b285c7b28f3cULL },   /* 0x1ad0930 */
-    { EP122_JUCE_GFX_FILLRECT_INT, 0xffff, 0, 0, 0, 8, 0, 0xf5ea, 0xbecf8bde01aeb8c2ULL },   /* 0x1cf9bc0 */
-    { EP122_JUCE_GFX_DRAWTEXT, 0xffff, 0, 0, 0, 8, 0, 0x9a8e, 0xb7579f8dc3ae6e30ULL },   /* 0x1b0c600 */
-    { EP122_JUCE_GFX_DRAWTEXT, 0xffff, 0, 0, 0, 8, 0, 0x7c39, 0x85d766be393994d0ULL },   /* 0x1d34b00 */
-    { EP122_JUCE_COMP_REPAINT_RECT, 0xffff, 0, 0, 0, 8, 0, 0x7ec1, 0x20a24e0bb7b64fbbULL },   /* 0x1ba7620 */
-    { EP122_JUCE_COMP_REPAINT_RECT, 0xffff, 0, 0, 0, 8, 0, 0x7ec1, 0xb8c5e9177135f6dbULL },   /* 0x1dbe2e0 */
-    { EP122_JUCE_COMP_REPAINT, 0xffff, 0, 0, 0, 16, 0, 0x2ea9, 0x5325d307ec848315ULL },   /* 0x1ba9e50 */
-    { EP122_JUCE_COMP_REPAINT, 0xffff, 0, 0, 0, 12, 0, 0xf5ea, 0x9f7798e728460727ULL },   /* 0x1dc0ad0 */
-    { EP122_JUCE_COMP_SETCOLOUR, 0xffff, 0, 0, 0, 8, 0, 0x47e5, 0xf397d982de19fbe5ULL },   /* 0x1b5f510 */
-    { EP122_JUCE_COMP_SETCOLOUR, 0xffff, 0, 0, 0, 8, 0, 0xe867, 0xf2593cd5c3289c77ULL },   /* 0x1d7db70 */
-    { EP122_JUCE_COMP_SETBOUNDS, 0xffff, 0, 0, 0, 8, 0, 0x47e5, 0xe1c02ec67287e803ULL },   /* 0x1bc08c0 */
-    { EP122_JUCE_COMP_SETBOUNDS, 0xffff, 0, 0, 0, 8, 0, 0xe867, 0x8751e3b1dd595143ULL },   /* 0x1dc59f0 */
-    { EP122_JUCE_COMP_SETTOPLEFT, 0xffff, 0, 0, 0, 8, 0, 0x77f6, 0x6d6e9cfad89384a9ULL },   /* 0x1bc1560 */
-    { EP122_JUCE_COMP_SETTOPLEFT, 0xffff, 0, 0, 0, 8, 0, 0x5708, 0x1fb5a340b7155538ULL },   /* 0x1dc6300 */
-    { EP122_JUCE_COMP_ADDVISIBLE, 0xffff, 0, 0, 0, 8, 0, 0x44eb, 0x319ba45a96612100ULL },   /* 0x1bbef90 */
-    { EP122_JUCE_COMP_ADDVISIBLE, 0xffff, 0, 0, 0, 8, 0, 0x0f09, 0xaf735b107d6f05ceULL },   /* 0x1ddc2e0 */
-    { EP122_JUCE_COMP_GRABFOCUS, 0xffff, 0, 0, 0, 8, 0, 0x8dde, 0x99f72c8126386902ULL },   /* 0x1baf350 */
-    { EP122_JUCE_COMP_GRABFOCUS, 0xffff, 0, 0, 0, 8, 0, 0x8dde, 0x84db9fa63f0cca2cULL },   /* 0x1dd24d0 */
-    { EP122_JUCE_HDR_GET_SORTCOL, 0xffff, 0, 0, 0, 8, 0, 0x0701, 0x99d8903e8ee9ec8eULL },   /* 0x1b7b0d0 */
-    { EP122_JUCE_HDR_GET_SORTCOL, 0xffff, 0, 0, 0, 8, 0, 0x80a6, 0x86c2b55f67d7fbccULL },   /* 0x1d94410 */
-    { EP122_JUCE_HDR_SET_SORTCOL, 0xffff, 0, 0, 0, 8, 0, 0x7b9d, 0x6bfc5bcff7eebe70ULL },   /* 0x1bad710 */
-    { EP122_JUCE_HDR_SET_SORTCOL, 0xffff, 0, 0, 0, 8, 0, 0x007e, 0x0aee2a20c2973beeULL },   /* 0x1dc3e30 */
-    { EP122_JUCE_LABEL_CTOR, 0xffff, 0, 0, 0, 8, 0, 0x5483, 0x00245482225c0911ULL },   /* 0x1bb8330 */
-    { EP122_JUCE_LABEL_CTOR, 0xffff, 0, 0, 0, 8, 0, 0xf505, 0x297bd21b99bfd4dbULL },   /* 0x1dd9d20 */
-    { EP122_JUCE_LABEL_SETFONT, 0xffff, 0, 0, 0, 8, 0, 0x3b47, 0xaab9beb5c632ef18ULL },   /* 0x1baad20 */
-    { EP122_JUCE_LABEL_SETFONT, 0xffff, 0, 0, 0, 8, 0, 0xdbc9, 0x39f40bb02446591cULL },   /* 0x1dc1c20 */
-    { EP122_JUCE_LABEL_JUSTIFY, 0xffff, 0, 0, 0, 8, 0, 0xf6d5, 0xd644ec23840c230fULL },   /* 0x1baa690 */
-    { EP122_JUCE_LABEL_JUSTIFY, 0xffff, 0, 0, 0, 8, 0, 0x666f, 0x48496bb74b61a8e5ULL },   /* 0x1dc15f0 */
-    { EP122_JUCE_LABEL_SETTEXT, 0xffff, 0, 0, 0, 8, 0, 0x3b47, 0xff77248fbd42d546ULL },   /* 0x1bf5360 */
-    { EP122_JUCE_LABEL_SETTEXT, 0xffff, 0, 0, 0, 8, 0, 0x6218, 0x01edab634443564fULL },   /* 0x1e091d0 */
-    { EP122_JUCE_IDENTIFIER_CTOR, 0xffff, 0, 0, 0, 12, 0, 0x2ea9, 0x7972365e579d72fcULL },   /* 0x1a65dc0 */
-    { EP122_JUCE_IDENTIFIER_CTOR, 0xffff, 0, 0, 0, 8, 0, 0x6218, 0x0533956b3612a775ULL },   /* 0x1c9b3f0 */
-    { EP122_JUCE_STRARR_CTOR, 0xffff, 0, 0, 0, 24, 0, 0x51b7, 0x0064d2478338738fULL },   /* 0x1a3c050 */
-    { EP122_JUCE_STRARR_CTOR, 0xffff, 0, 0, 0, 24, 0, 0x51b7, 0x76d3e6f2377c8046ULL },   /* 0x1c67ea0 */
-    { EP122_JUCE_STRARR_ADD, 0xffff, 0, 0, 0, 24, 0, 0x3b47, 0x7eed29fcb8daff25ULL },   /* 0x1a3c5a0 */
-    { EP122_JUCE_STRARR_ADD, 0xffff, 0, 0, 0, 8, 1, 0xca00, 0xa84ce95abcb2365aULL },   /* 0x1c981d0 */
-    { EP122_JUCE_STRARR_DTOR, 0xffff, 0, 0, 0, 24, 0, 0x2ea9, 0x419793983601557dULL },   /* 0x1a6d0b0 */
-    { EP122_JUCE_STRARR_DTOR, 0xffff, 0, 0, 0, 12, 0, 0x7a2f, 0x4ed10c66ad3673c1ULL },   /* 0x1c954f0 */
-    { EP122_JUCE_LISTBOX_SELECTROW, 0xffff, 0, 0, 0, 8, 0, 0x035d, 0x2abb625168d0fca7ULL },   /* 0x1bddde0 */
-    { EP122_JUCE_LISTBOX_SELECTROW, 0xffff, 0, 0, 0, 8, 0, 0x035d, 0x0f336aa19d3c0204ULL },   /* 0x1e04790 */
-    { EP122_JUCE_LISTBOX_CURRENTROW, 0xffff, 0, 0, 0, 8, 0, 0x36d2, 0xcdb2dd9c111e5fbeULL },   /* 0x1b79e90 */
-    { EP122_JUCE_LISTBOX_CURRENTROW, 0xffff, 0, 0, 0, 8, 0, 0x0e13, 0x84d67d1b6e5a8e81ULL },   /* 0x1d93210 */
-    { EP122_JUCE_LISTBOX_UPDATE, 0xffff, 0, 0, 0, 8, 0, 0x3b47, 0x9010627fe9ea26e1ULL },   /* 0x1bdb410 */
-    { EP122_JUCE_LISTBOX_UPDATE, 0xffff, 0, 0, 0, 8, 0, 0x6218, 0x84a493c79d7d808fULL },   /* 0x1df12e0 */
-    { EP122_JUCE_EDITOR_SETTEXT, 0xffff, 0, 0, 0, 8, 0, 0x47e5, 0xd56596177953ee53ULL },   /* 0x1bfc190 */
-    { EP122_JUCE_EDITOR_SETTEXT, 0xffff, 0, 0, 0, 8, 0, 0xe867, 0x2dee86645ae5c2c0ULL },   /* 0x1e10a40 */
-    { EP122_JUCE_EDITOR_CTOR, 0xffff, 0, 0, 0, 8, 0, 0xf40e, 0x14b45a6ada750d82ULL },   /* 0x1c00480 */
-    { EP122_JUCE_EDITOR_CTOR, 0xffff, 0, 0, 0, 8, 0, 0x9490, 0xb82321f3d4332bb9ULL },   /* 0x1e148a0 */
-    { EP122_JUCE_EDITOR_SETFONT, 0xffff, 0, 0, 0, 8, 0, 0x2ea9, 0xc88f267713058c94ULL },   /* 0x1bd1ac0 */
-    { EP122_JUCE_EDITOR_SETFONT, 0xffff, 0, 0, 0, 8, 0, 0xe867, 0xcfcdc1f9c2c2885bULL },   /* 0x1dceea0 */
-    { EP122_JUCE_EDITOR_JUSTIFY, 0xffff, 0, 0, 0, 8, 0, 0xba66, 0x82558b690891d5c9ULL },   /* 0x1b7ba70 */
-    { EP122_EP122_FONT_BUILD, 0xffff, 0, 0, 0, 8, 0, 0x3b47, 0x5b2f82c306812cb7ULL },   /* 0x175d6e8 */
-    { EP122_EP122_FONT_BUILD, 0xffff, 0, 0, 0, 8, 0, 0xe867, 0x93421cc4ec638c3fULL },   /* 0x1986da0 */
-    { EP122_CREATE_READER_FOR, 0xffff, 0, 0, 0, 8, 0, 0x47e5, 0xf4ccce1d3cf15357ULL },   /* 0xa3d120 */
-    { EP122_CREATE_READER_FOR, 0xffff, 0, 0, 0, 8, 0, 0xf505, 0xfa62050d99dbe17aULL },   /* 0xad9e10 */
-    { EP122_SET_QUICKMENU_MODE, 0xffff, 0, 0, 0, 8, 0, 0x3905, 0x61a623a516a8ec8dULL },   /* 0x14a40e0 */
-    { EP122_SET_QUICKMENU_MODE, 0xffff, 0, 0, 0, 8, 0, 0xdbc9, 0x378b5b56430cefb3ULL },   /* 0x1664360 */
-    { EP122_KBD_SHOW, 0xffff, 0, 0, 0, 8, 0, 0xb4f8, 0xf6348782a8bc9b32ULL },   /* 0x143a608 */
-    { EP122_KBD_SHOW, 0xffff, 0, 0, 0, 8, 0, 0x6218, 0xeceaf86065f267c7ULL },   /* 0x15eea10 */
-    { EP122_KBD_HIDE, 0xffff, 0, 0, 0, 8, 0, 0x2ea9, 0xe6b71dd49a09daa2ULL },   /* 0x143a5b0 */
-    { EP122_KBD_HIDE, 0xffff, 0, 0, 0, 12, 0, 0xdbc9, 0xe6f23f3d0487bb9bULL },   /* 0x15ee660 */
-    { EP122_KBD_KEY_TO_TEXT, 0xffff, 0, 0, 0, 8, 0, 0x5367, 0x1910facb4e5d2a68ULL },   /* 0x144e5b8 */
-    { EP122_KBD_KEY_TO_TEXT, 0xffff, 0, 0, 0, 8, 0, 0x74fb, 0x1c24e4a79a99f29aULL },   /* 0x16088a0 */
-    { EP122_ENTER_DJSETTING, 0xffff, 0, 0, 0, 8, 0, 0x2ea9, 0x1e08c6fb26f0b600ULL },   /* 0x14361e0 */
-    { EP122_ENTER_DJSETTING, 0xffff, 0, 0, 0, 12, 0, 0xf505, 0xd73dd7d9baf50bf5ULL },   /* 0x15e7500 */
-    { EP122_POPUP_CTOR, 0xffff, 0, 0, 0, 8, 0, 0x07e8, 0xc9ce5570f4743a36ULL },   /* 0x15782b0 */
-    { EP122_POPUP_CTOR, 0xffff, 0, 0, 0, 8, 0, 0xa12e, 0xf5fca88ece814ca1ULL },   /* 0x174c7a0 */
-    { EP122_POPUP_SETMESSAGE, 0xffff, 0, 0, 0, 8, 0, 0x2ea9, 0x2bf579af7bb89c48ULL },   /* 0x15734b0 */
-    { EP122_POPUP_SETMESSAGE, 0xffff, 0, 0, 0, 8, 0, 0x007e, 0x50b867cad0acd272ULL },   /* 0x17488e0 */
-    { EP122_POPUP_ADDLISTENER, EP122_SOURCE_SELECT_BUILD, 0, 1, 1024, 8, 0, 0xcf9c, 0xb70f85dbc47338aeULL },   /* 0x1573540 */
-    { EP122_POPUP_ADDLISTENER, 0xffff, 0, 0, 0, 8, 0, 0x6218, 0xb6d4358653d3f6d2ULL },   /* 0x1748b00 */
-    { EP122_RMODEL_SETSTRINGS, 0xffff, 0, 0, 0, 8, 0, 0x388d, 0xab100e6f4f918e74ULL },   /* 0x159c468 */
-    { EP122_RMODEL_SETSTRINGS, 0xffff, 0, 0, 0, 8, 0, 0x388d, 0x32e6106f2b2ebe1bULL },   /* 0x176e5bc */
-    { EP122_SRC_CTOR, 0xffff, 0, 0, 0, 12, 0, 0xc196, 0x6f869eec50380c96ULL },   /* 0xa54430 */
-    { EP122_SRC_CTOR, 0xffff, 0, 0, 0, 8, 0, 0xe867, 0xe1853d4acc55a9ecULL },   /* 0xaf40d0 */
-    { EP122_ASYNC_REQUEST_ID, EP122_WAVEFORM_THROW, 0, 1, 1024, 8, 4, 0x656e, 0xf94fe86e07503a01ULL },   /* 0x1204cf8 */
-    { EP122_ASYNC_REQUEST_ID, EP122_WAVEFORM_THROW, 0, 1, 1024, 8, 0, 0xf5ea, 0xb60b10e861fd5ac3ULL },   /* 0x13943c0 */
-    { EP122_DJDB_UPDATE, 0xffff, 0, 0, 0, 8, 0, 0x85df, 0x5a306e0f106ebfc1ULL },   /* 0x1c67790 */
-    { EP122_ML_DROP_PLAYLIST_CACHE, 0xffff, 0, 0, 0, 48, 0, 0x3b47, 0x9d33ac74559b98b5ULL },   /* 0xf354e0 */
-    { EP122_ML_DROP_PLAYLIST_CACHE, 0xffff, 0, 0, 0, 48, 0, 0x0d1c, 0x8dc5be45c2359a35ULL },   /* 0x1085290 */
-    { EP122_ML_CACHE_TRIM, 0xffff, 0, 0, 0, 8, 0, 0xdad2, 0x24cbf63d1913e9cbULL },   /* 0xf35bf8 */
-    { EP122_ML_CACHE_TRIM, 0xffff, 0, 0, 0, 8, 0, 0x87f2, 0x94d13965ea12b5ffULL },   /* 0x10858b0 */
-    { EP122_ML_DROP_PLAYLIST_LIST, 0xffff, 0, 0, 0, 64, 0, 0x3b47, 0xdd8a5e109c6c818cULL },   /* 0xf35470 */
-    { EP122_ML_DROP_PLAYLIST_LIST, 0xffff, 0, 0, 0, 96, 0, 0x0d1c, 0x8ddfb6382ddb3e97ULL },   /* 0x10851f0 */
-    { EP122_ML_DROP_HIERARCHY, 0xffff, 0, 0, 0, 8, 0, 0x3b47, 0xc1febfecec291c19ULL },   /* 0xf35790 */
-    { EP122_ML_DROP_HIERARCHY, 0xffff, 0, 0, 0, 8, 0, 0x0d1c, 0xeedb5eed13331711ULL },   /* 0x1085620 */
-    { EP122_CUE_SET_HERE, 0xffff, 0, 0, 0, 8, 0, 0x3b47, 0xff7bfb943d2a981aULL },   /* 0x10d0730 */
-    { EP122_CUE_SET_HERE, 0xffff, 0, 0, 0, 12, 0, 0x6218, 0x8efe094a0e2e01ebULL },   /* 0x124fc40 */
-    { EP122_WAVE_RENDER_BG, 0xffff, 0, 0, 0, 8, 0, 0x47e5, 0xf530264a66537604ULL },   /* 0x1647978 */
-    { EP122_WAVE_RENDER_BG, 0xffff, 0, 0, 0, 8, 0, 0xf505, 0x11c8cbf364c45735ULL },   /* 0x183b5c0 */
-    { EP122_CUE_SET_AT, 0xffff, 0, 0, 0, 8, 0, 0x3b47, 0x6b6e3c67cc469556ULL },   /* 0x10cf828 */
-    { EP122_CUE_SET_AT, 0xffff, 0, 0, 0, 8, 0, 0xa12e, 0x31ebfbd599aaf987ULL },   /* 0x124e740 */
-    { EP122_HUI_LED_WRITE, 0xffff, 0, 0, 0, 8, 0, 0x6121, 0x5e427fec6bc8ca7bULL },   /* 0x1917e00 */
-    { EP122_HUI_LED_WRITE, 0xffff, 0, 0, 0, 8, 0, 0x01a3, 0x8cb5f19ea867d851ULL },   /* 0x1b46540 */
-    { EP122_SQLITE_UPDATE_EXEC, 0xffff, 0, 0, 0, 12, 0, 0xdad2, 0xe0a20b817427f625ULL },   /* 0xe92b68 */
-    { EP122_SQLITE_UPDATE_EXEC, 0xffff, 0, 0, 0, 8, 0, 0x87f2, 0xf580db9bb070a6b8ULL },   /* 0xfc4d50 */
-    { EP122_DJDB_CONTEXT, 0xffff, 0, 0, 0, 8, 3, 0xf9cd, 0x5c5571d60801ad2bULL },   /* 0x1c97b50 */
-    { EP122_DJDB_ROW_INSERT, 0xffff, 0, 0, 0, 8, 0, 0x6121, 0xf5f7f641148dec09ULL },   /* 0x1c66f80 */
-    { EP122_DJDB_QUERY, 0xffff, 0, 0, 0, 8, 0, 0x70e9, 0xc332bab0d6a32a8cULL },   /* 0x1c67420 */
-    { EP122_DJDB_TXN_A, 0xffff, 0, 0, 0, 48, 0, 0x3b47, 0xfcc4daa8e4284041ULL },   /* 0x1c69120 */
-    { EP122_DJDB_TXN_B, 0xffff, 0, 0, 0, 48, 0, 0x3b47, 0xd46154acb03196f0ULL },   /* 0x1c691d0 */
-    { EP122_DJDB_PAGE_READ, 0xffff, 0, 0, 0, 8, 0, 0xb4f8, 0xc120ab3f5ddbcf8fULL },   /* 0x1c79270 */
-    { EP122_DJDB_PAGE_WRITE, 0xffff, 0, 0, 0, 8, 0, 0xb4f8, 0xae55515d31d3148dULL },   /* 0x1c79110 */
-    { EP122_DJDB_ROW_COL, 0xffff, 0, 0, 0, 8, 0, 0x3958, 0x0ce5b8ef053cef48ULL },   /* 0x1c5c1b0 */
-    { EP122_DJDB_MARK_DIRTY, 0xffff, 0, 0, 0, 8, 0, 0xb4f8, 0xf4b551447bd78289ULL },   /* 0x1c63b20 */
-    { EP122_DJDB_MARK_DIRTY_PLAIN, 0xffff, 0, 0, 0, 8, 0, 0xb4f8, 0xfea0da6be0c2c899ULL },   /* 0x1c625b0 */
-    { EP122_DJDB_BUFFER_GET_PAGE, 0xffff, 0, 0, 0, 8, 0, 0x47e5, 0xa6d98b6d253cb35bULL },   /* 0x1c647e0 */
+    { EP122_JUCE_STRING_CTOR_CSTR, 0xffff, 0, 0, 0, 64, 0, 0x2ea9, 0x5074652792dd9235ULL },   /* 0x1a2fea0 */
+    { EP122_JUCE_STRING_CTOR_CSTR, 0xffff, 0, 0, 0, 48, 0, 0xf5ea, 0x561d2a9c3f19ad56ULL },   /* 0x1c51670 */
+    { EP122_JUCE_STRING_DTOR, 0xffff, 0, 0, 0, 12, 0, 0x9540, 0x95db38201bc0b734ULL },   /* 0x19f87f0 */
+    { EP122_JUCE_STRING_DTOR, 0xffff, 0, 0, 0, 8, 0, 0x9540, 0xe986204b293a3a41ULL },   /* 0x1c2ec20 */
+    { EP122_JUCE_STRING_CTOR_EMPTY, 0xffff, 0, 0, 0, 24, 3, 0xc737, 0xff062497f36aaa7bULL },   /* 0x1a0b700 */
+    { EP122_JUCE_STRING_CTOR_EMPTY, 0xffff, 0, 0, 0, 12, 3, 0xc737, 0xef12a27908e97c9eULL },   /* 0x1c30af0 */
+    { EP122_JUCE_VAR_CTOR_STRING, 0xffff, 0, 0, 0, 8, 3, 0x656e, 0xd334811eb15d6a61ULL },   /* 0x19fe140 */
+    { EP122_JUCE_VAR_CTOR_STRING, 0xffff, 0, 0, 0, 8, 0, 0xd50d, 0x0c6bfd2197b507d5ULL },   /* 0x1c22b60 */
+    { EP122_JUCE_VAR_DTOR, 0xffff, 0, 0, 0, 8, 0, 0xbb6e, 0x9cb1ae117261b3cdULL },   /* 0x19f5a50 */
+    { EP122_JUCE_VALUE_SETVALUE, 0xffff, 0, 0, 0, 8, 0, 0xd1ae, 0xabe529d7cd25d44bULL },   /* 0x1a835f0 */
+    { EP122_JUCE_FONT_DTOR, 0xffff, 0, 0, 0, 16, 0, 0x9540, 0xb8ee7f97b33f45faULL },   /* 0x1ad57b0 */
+    { EP122_JUCE_FONT_DTOR, 0xffff, 0, 0, 0, 8, 0, 0x9540, 0x69bc9088b370cb8fULL },   /* 0x1d006e0 */
+    { EP122_JUCE_GFX_SETFONT, 0xffff, 0, 0, 0, 24, 0, 0xb4f8, 0x124b7b34ab2d2b6aULL },   /* 0x1aab750 */
+    { EP122_JUCE_GFX_SETFONT, 0xffff, 0, 0, 0, 16, 0, 0x007e, 0xb72d8104f7e9ae95ULL },   /* 0x1cccc90 */
+    { EP122_JUCE_GFX_SETCOLOUR, 0xffff, 0, 0, 0, 8, 0, 0x47e5, 0x6f82d8389eed5f94ULL },   /* 0x1aab300 */
+    { EP122_JUCE_GFX_SETCOLOUR, 0xffff, 0, 0, 0, 8, 0, 0x6eb6, 0xdfc9507ab80a701aULL },   /* 0x1cfb2c0 */
+    { EP122_JUCE_GFX_FILLRECT_INT, 0xffff, 0, 0, 0, 8, 0, 0x3567, 0x46e7b285c7b28f3cULL },   /* 0x1aab840 */
+    { EP122_JUCE_GFX_FILLRECT_INT, 0xffff, 0, 0, 0, 8, 0, 0xf5ea, 0xbecf8bde01aeb8c2ULL },   /* 0x1cccd70 */
+    { EP122_JUCE_GFX_DRAWTEXT, 0xffff, 0, 0, 0, 8, 0, 0x9a8e, 0xb7579f8dc3ae6e30ULL },   /* 0x1ae7510 */
+    { EP122_JUCE_GFX_DRAWTEXT, 0xffff, 0, 0, 0, 8, 0, 0x7c39, 0x85d766be393994d0ULL },   /* 0x1d07cb0 */
+    { EP122_JUCE_COMP_REPAINT_RECT, 0xffff, 0, 0, 0, 8, 0, 0x7ec1, 0x20a24e0bb7b64fbbULL },   /* 0x1b82530 */
+    { EP122_JUCE_COMP_REPAINT_RECT, 0xffff, 0, 0, 0, 8, 0, 0x7ec1, 0xb8c5e9177135f6dbULL },   /* 0x1d91490 */
+    { EP122_JUCE_COMP_REPAINT, 0xffff, 0, 0, 0, 16, 0, 0x2ea9, 0x5325d307ec848315ULL },   /* 0x1b84d60 */
+    { EP122_JUCE_COMP_REPAINT, 0xffff, 0, 0, 0, 12, 0, 0xf5ea, 0x9f7798e728460727ULL },   /* 0x1d93c80 */
+    { EP122_JUCE_COMP_SETCOLOUR, 0xffff, 0, 0, 0, 8, 0, 0x47e5, 0xf397d982de19fbe5ULL },   /* 0x1b3a420 */
+    { EP122_JUCE_COMP_SETCOLOUR, 0xffff, 0, 0, 0, 8, 0, 0xe867, 0xf2593cd5c3289c77ULL },   /* 0x1d50d20 */
+    { EP122_JUCE_COMP_SETBOUNDS, 0xffff, 0, 0, 0, 8, 0, 0x47e5, 0xe1c02ec67287e803ULL },   /* 0x1b9b7d0 */
+    { EP122_JUCE_COMP_SETBOUNDS, 0xffff, 0, 0, 0, 8, 0, 0xe867, 0x8751e3b1dd595143ULL },   /* 0x1d98ba0 */
+    { EP122_JUCE_COMP_SETTOPLEFT, 0xffff, 0, 0, 0, 8, 0, 0x77f6, 0x6d6e9cfad89384a9ULL },   /* 0x1b9c470 */
+    { EP122_JUCE_COMP_SETTOPLEFT, 0xffff, 0, 0, 0, 8, 0, 0x5708, 0x1fb5a340b7155538ULL },   /* 0x1d994b0 */
+    { EP122_JUCE_COMP_ADDVISIBLE, 0xffff, 0, 0, 0, 8, 0, 0x44eb, 0x319ba45a96612100ULL },   /* 0x1b99ea0 */
+    { EP122_JUCE_COMP_ADDVISIBLE, 0xffff, 0, 0, 0, 8, 0, 0x0f09, 0xaf735b107d6f05ceULL },   /* 0x1daf490 */
+    { EP122_JUCE_COMP_GRABFOCUS, 0xffff, 0, 0, 0, 8, 0, 0x8dde, 0x99f72c8126386902ULL },   /* 0x1b8a260 */
+    { EP122_JUCE_COMP_GRABFOCUS, 0xffff, 0, 0, 0, 8, 0, 0x8dde, 0x84db9fa63f0cca2cULL },   /* 0x1da5680 */
+    { EP122_JUCE_HDR_GET_SORTCOL, 0xffff, 0, 0, 0, 8, 0, 0x0701, 0x99d8903e8ee9ec8eULL },   /* 0x1b55fe0 */
+    { EP122_JUCE_HDR_GET_SORTCOL, 0xffff, 0, 0, 0, 8, 0, 0x80a6, 0x86c2b55f67d7fbccULL },   /* 0x1d675c0 */
+    { EP122_JUCE_HDR_SET_SORTCOL, 0xffff, 0, 0, 0, 8, 0, 0x7b9d, 0x6bfc5bcff7eebe70ULL },   /* 0x1b88620 */
+    { EP122_JUCE_HDR_SET_SORTCOL, 0xffff, 0, 0, 0, 8, 0, 0x007e, 0x0aee2a20c2973beeULL },   /* 0x1d96fe0 */
+    { EP122_JUCE_LABEL_CTOR, 0xffff, 0, 0, 0, 8, 0, 0x5483, 0x00245482225c0911ULL },   /* 0x1b93240 */
+    { EP122_JUCE_LABEL_CTOR, 0xffff, 0, 0, 0, 8, 0, 0xf505, 0x297bd21b99bfd4dbULL },   /* 0x1daced0 */
+    { EP122_JUCE_LABEL_SETFONT, 0xffff, 0, 0, 0, 8, 0, 0x3b47, 0xaab9beb5c632ef18ULL },   /* 0x1b85c30 */
+    { EP122_JUCE_LABEL_SETFONT, 0xffff, 0, 0, 0, 8, 0, 0xdbc9, 0x39f40bb02446591cULL },   /* 0x1d94dd0 */
+    { EP122_JUCE_LABEL_JUSTIFY, 0xffff, 0, 0, 0, 8, 0, 0xf6d5, 0xd644ec23840c230fULL },   /* 0x1b855a0 */
+    { EP122_JUCE_LABEL_JUSTIFY, 0xffff, 0, 0, 0, 8, 0, 0x666f, 0x48496bb74b61a8e5ULL },   /* 0x1d947a0 */
+    { EP122_JUCE_LABEL_SETTEXT, 0xffff, 0, 0, 0, 8, 0, 0x3b47, 0xff77248fbd42d546ULL },   /* 0x1bd0270 */
+    { EP122_JUCE_LABEL_SETTEXT, 0xffff, 0, 0, 0, 8, 0, 0x6218, 0x01edab634443564fULL },   /* 0x1ddc380 */
+    { EP122_JUCE_IDENTIFIER_CTOR, 0xffff, 0, 0, 0, 12, 0, 0x2ea9, 0x7972365e579d72fcULL },   /* 0x1a40c00 */
+    { EP122_JUCE_IDENTIFIER_CTOR, 0xffff, 0, 0, 0, 8, 0, 0x6218, 0x0533956b3612a775ULL },   /* 0x1c6e500 */
+    { EP122_JUCE_STRARR_CTOR, 0xffff, 0, 0, 0, 24, 0, 0x51b7, 0x0064d2478338738fULL },   /* 0x1a16e90 */
+    { EP122_JUCE_STRARR_CTOR, 0xffff, 0, 0, 0, 24, 0, 0x51b7, 0x76d3e6f2377c8046ULL },   /* 0x1c3afb0 */
+    { EP122_JUCE_STRARR_ADD, 0xffff, 0, 0, 0, 24, 0, 0x3b47, 0x7eed29fcb8daff25ULL },   /* 0x1a173e0 */
+    { EP122_JUCE_STRARR_ADD, 0xffff, 0, 0, 0, 8, 1, 0xca00, 0xa84ce95abcb2365aULL },   /* 0x1c6b2e0 */
+    { EP122_JUCE_STRARR_DTOR, 0xffff, 0, 0, 0, 24, 0, 0x2ea9, 0x419793983601557dULL },   /* 0x1a47ef0 */
+    { EP122_JUCE_STRARR_DTOR, 0xffff, 0, 0, 0, 12, 0, 0x7a2f, 0x4ed10c66ad3673c1ULL },   /* 0x1c68600 */
+    { EP122_JUCE_LISTBOX_SELECTROW, 0xffff, 0, 0, 0, 8, 0, 0x035d, 0x2abb625168d0fca7ULL },   /* 0x1bb8cf0 */
+    { EP122_JUCE_LISTBOX_SELECTROW, 0xffff, 0, 0, 0, 8, 0, 0x035d, 0x0f336aa19d3c0204ULL },   /* 0x1dd7940 */
+    { EP122_JUCE_LISTBOX_CURRENTROW, 0xffff, 0, 0, 0, 8, 0, 0x36d2, 0xcdb2dd9c111e5fbeULL },   /* 0x1b54da0 */
+    { EP122_JUCE_LISTBOX_CURRENTROW, 0xffff, 0, 0, 0, 8, 0, 0x0e13, 0x84d67d1b6e5a8e81ULL },   /* 0x1d663c0 */
+    { EP122_JUCE_LISTBOX_UPDATE, 0xffff, 0, 0, 0, 8, 0, 0x3b47, 0x9010627fe9ea26e1ULL },   /* 0x1bb6320 */
+    { EP122_JUCE_LISTBOX_UPDATE, 0xffff, 0, 0, 0, 8, 0, 0x6218, 0x84a493c79d7d808fULL },   /* 0x1dc4490 */
+    { EP122_JUCE_EDITOR_SETTEXT, 0xffff, 0, 0, 0, 8, 0, 0x47e5, 0xd56596177953ee53ULL },   /* 0x1bd70a0 */
+    { EP122_JUCE_EDITOR_SETTEXT, 0xffff, 0, 0, 0, 8, 0, 0xe867, 0x2dee86645ae5c2c0ULL },   /* 0x1de3bf0 */
+    { EP122_JUCE_EDITOR_CTOR, 0xffff, 0, 0, 0, 8, 0, 0xf40e, 0x14b45a6ada750d82ULL },   /* 0x1bdb390 */
+    { EP122_JUCE_EDITOR_CTOR, 0xffff, 0, 0, 0, 8, 0, 0x9490, 0xb82321f3d4332bb9ULL },   /* 0x1de7a50 */
+    { EP122_JUCE_EDITOR_SETFONT, 0xffff, 0, 0, 0, 8, 0, 0x2ea9, 0xc88f267713058c94ULL },   /* 0x1bac9d0 */
+    { EP122_JUCE_EDITOR_SETFONT, 0xffff, 0, 0, 0, 8, 0, 0xe867, 0xcfcdc1f9c2c2885bULL },   /* 0x1da2050 */
+    { EP122_JUCE_EDITOR_JUSTIFY, 0xffff, 0, 0, 0, 8, 0, 0xba66, 0x82558b690891d5c9ULL },   /* 0x1b56980 */
+    { EP122_EP122_FONT_BUILD, 0xffff, 0, 0, 0, 8, 0, 0x3b47, 0x5b2f82c306812cb7ULL },   /* 0x17386d8 */
+    { EP122_EP122_FONT_BUILD, 0xffff, 0, 0, 0, 8, 0, 0xe867, 0x93421cc4ec638c3fULL },   /* 0x195a090 */
+    { EP122_CREATE_READER_FOR, 0xffff, 0, 0, 0, 8, 0, 0x47e5, 0xf4ccce1d3cf15357ULL },   /* 0xa36bd8 */
+    { EP122_CREATE_READER_FOR, 0xffff, 0, 0, 0, 8, 0, 0xf505, 0xfa62050d99dbe17aULL },   /* 0xad2230 */
+    { EP122_SET_QUICKMENU_MODE, 0xffff, 0, 0, 0, 8, 0, 0x3905, 0x61a623a516a8ec8dULL },   /* 0x14807d0 */
+    { EP122_SET_QUICKMENU_MODE, 0xffff, 0, 0, 0, 8, 0, 0xdbc9, 0x378b5b56430cefb3ULL },   /* 0x163a3d0 */
+    { EP122_KBD_SHOW, 0xffff, 0, 0, 0, 8, 0, 0xb4f8, 0xf6348782a8bc9b32ULL },   /* 0x1416d48 */
+    { EP122_KBD_SHOW, 0xffff, 0, 0, 0, 8, 0, 0x6218, 0xeceaf86065f267c7ULL },   /* 0x15c48c0 */
+    { EP122_KBD_HIDE, 0xffff, 0, 0, 0, 8, 0, 0x2ea9, 0xe6b71dd49a09daa2ULL },   /* 0x1416cf0 */
+    { EP122_KBD_HIDE, 0xffff, 0, 0, 0, 12, 0, 0xdbc9, 0xe6f23f3d0487bb9bULL },   /* 0x15c4510 */
+    { EP122_KBD_KEY_TO_TEXT, 0xffff, 0, 0, 0, 8, 0, 0x5367, 0x1910facb4e5d2a68ULL },   /* 0x142acd0 */
+    { EP122_KBD_KEY_TO_TEXT, 0xffff, 0, 0, 0, 8, 0, 0x74fb, 0x1c24e4a79a99f29aULL },   /* 0x15de700 */
+    { EP122_ENTER_DJSETTING, 0xffff, 0, 0, 0, 8, 0, 0x2ea9, 0x1e08c6fb26f0b600ULL },   /* 0x1412920 */
+    { EP122_ENTER_DJSETTING, 0xffff, 0, 0, 0, 12, 0, 0xf505, 0xd73dd7d9baf50bf5ULL },   /* 0x15bd3b0 */
+    { EP122_POPUP_CTOR, 0xffff, 0, 0, 0, 8, 0, 0x07e8, 0xc9ce5570f4743a36ULL },   /* 0x15547d0 */
+    { EP122_POPUP_CTOR, 0xffff, 0, 0, 0, 8, 0, 0xa12e, 0xf5fca88ece814ca1ULL },   /* 0x1722900 */
+    { EP122_POPUP_SETMESSAGE, 0xffff, 0, 0, 0, 8, 0, 0x2ea9, 0x2bf579af7bb89c48ULL },   /* 0x154f9d0 */
+    { EP122_POPUP_SETMESSAGE, 0xffff, 0, 0, 0, 8, 0, 0x007e, 0x50b867cad0acd272ULL },   /* 0x171ea40 */
+    { EP122_POPUP_ADDLISTENER, EP122_SOURCE_SELECT_BUILD, 0, 1, 1024, 8, 0, 0xcf9c, 0xb70f85dbc47338aeULL },   /* 0x154fa60 */
+    { EP122_POPUP_ADDLISTENER, EP122_SOURCE_SELECT_BUILD, 0, 1, 1024, 8, 0, 0x6218, 0xb6d4358653d3f6d2ULL },   /* 0x171ec60 */
+    { EP122_RMODEL_SETSTRINGS, 0xffff, 0, 0, 0, 8, 0, 0x388d, 0xab100e6f4f918e74ULL },   /* 0x1578bf8 */
+    { EP122_RMODEL_SETSTRINGS, 0xffff, 0, 0, 0, 8, 0, 0x388d, 0x32e6106f2b2ebe1bULL },   /* 0x174458c */
+    { EP122_SRC_CTOR, 0xffff, 0, 0, 0, 12, 0, 0xc196, 0x6f869eec50380c96ULL },   /* 0xa4df00 */
+    { EP122_SRC_CTOR, 0xffff, 0, 0, 0, 8, 0, 0xe867, 0xe1853d4acc55a9ecULL },   /* 0xaec510 */
+    { EP122_ASYNC_REQUEST_ID, EP122_WAVEFORM_THROW, 0, 1, 1024, 8, 4, 0x656e, 0xf94fe86e07503a01ULL },   /* 0x11e0138 */
+    { EP122_ASYNC_REQUEST_ID, EP122_WAVEFORM_THROW, 0, 1, 1024, 8, 0, 0xf5ea, 0xb60b10e861fd5ac3ULL },   /* 0x136b1c0 */
+    { EP122_DJDB_UPDATE, 0xffff, 0, 0, 0, 8, 0, 0x85df, 0x5a306e0f106ebfc1ULL },   /* 0x1c426a0 */
+    { EP122_ML_DROP_PLAYLIST_CACHE, 0xffff, 0, 0, 0, 48, 0, 0x3b47, 0x9d33ac74559b98b5ULL },   /* 0xf15f70 */
+    { EP122_ML_DROP_PLAYLIST_CACHE, 0xffff, 0, 0, 0, 48, 0, 0x0d1c, 0x8dc5be45c2359a35ULL },   /* 0x1062110 */
+    { EP122_ML_CACHE_TRIM, 0xffff, 0, 0, 0, 8, 0, 0xdad2, 0x24cbf63d1913e9cbULL },   /* 0xf16688 */
+    { EP122_ML_CACHE_TRIM, 0xffff, 0, 0, 0, 8, 0, 0x87f2, 0x94d13965ea12b5ffULL },   /* 0x1062730 */
+    { EP122_ML_DROP_PLAYLIST_LIST, 0xffff, 0, 0, 0, 64, 0, 0x3b47, 0xdd8a5e109c6c818cULL },   /* 0xf15f00 */
+    { EP122_ML_DROP_PLAYLIST_LIST, 0xffff, 0, 0, 0, 96, 0, 0x0d1c, 0x8ddfb6382ddb3e97ULL },   /* 0x1062070 */
+    { EP122_ML_DROP_HIERARCHY, 0xffff, 0, 0, 0, 8, 0, 0x3b47, 0xc1febfecec291c19ULL },   /* 0xf16220 */
+    { EP122_ML_DROP_HIERARCHY, 0xffff, 0, 0, 0, 8, 0, 0x0d1c, 0xeedb5eed13331711ULL },   /* 0x10624a0 */
+    { EP122_CUE_SET_HERE, 0xffff, 0, 0, 0, 8, 0, 0x3b47, 0xff7bfb943d2a981aULL },   /* 0x10ad670 */
+    { EP122_CUE_SET_HERE, 0xffff, 0, 0, 0, 12, 0, 0x6218, 0x8efe094a0e2e01ebULL },   /* 0x1227fb0 */
+    { EP122_WAVE_RENDER_BG, 0xffff, 0, 0, 0, 8, 0, 0x47e5, 0xf530264a66537604ULL },   /* 0x1624078 */
+    { EP122_WAVE_RENDER_BG, 0xffff, 0, 0, 0, 8, 0, 0xf505, 0x11c8cbf364c45735ULL },   /* 0x1810af0 */
+    { EP122_CUE_SET_AT, 0xffff, 0, 0, 0, 8, 0, 0x3b47, 0x6b6e3c67cc469556ULL },   /* 0x10ac768 */
+    { EP122_CUE_SET_AT, 0xffff, 0, 0, 0, 8, 0, 0xa12e, 0x31ebfbd599aaf987ULL },   /* 0x1226ab0 */
+    { EP122_HUI_LED_WRITE, 0xffff, 0, 0, 0, 8, 0, 0x6121, 0x5e427fec6bc8ca7bULL },   /* 0x18f2c40 */
+    { EP122_HUI_LED_WRITE, 0xffff, 0, 0, 0, 8, 0, 0x01a3, 0x8cb5f19ea867d851ULL },   /* 0x1b19650 */
+    { EP122_SQLITE_UPDATE_EXEC, 0xffff, 0, 0, 0, 12, 0, 0xdad2, 0xe0a20b817427f625ULL },   /* 0xe27060 */
+    { EP122_SQLITE_UPDATE_EXEC, 0xffff, 0, 0, 0, 8, 0, 0x87f2, 0xf580db9bb070a6b8ULL },   /* 0xfaf100 */
+    { EP122_DJDB_CONTEXT, 0xffff, 0, 0, 0, 8, 3, 0xf9cd, 0x5c5571d60801ad2bULL },   /* 0x1c72a60 */
+    { EP122_DJDB_ROW_INSERT, 0xffff, 0, 0, 0, 8, 0, 0x6121, 0xf5f7f641148dec09ULL },   /* 0x1c41e90 */
+    { EP122_DJDB_QUERY, 0xffff, 0, 0, 0, 8, 0, 0x70e9, 0xc332bab0d6a32a8cULL },   /* 0x1c42330 */
+    { EP122_DJDB_TXN_A, 0xffff, 0, 0, 0, 48, 0, 0x3b47, 0xfcc4daa8e4284041ULL },   /* 0x1c44030 */
+    { EP122_DJDB_TXN_B, 0xffff, 0, 0, 0, 48, 0, 0x3b47, 0xd46154acb03196f0ULL },   /* 0x1c440e0 */
+    { EP122_DJDB_PAGE_READ, 0xffff, 0, 0, 0, 8, 0, 0xb4f8, 0xc120ab3f5ddbcf8fULL },   /* 0x1c54180 */
+    { EP122_DJDB_PAGE_WRITE, 0xffff, 0, 0, 0, 8, 0, 0xb4f8, 0xae55515d31d3148dULL },   /* 0x1c54020 */
+    { EP122_DJDB_ROW_COL, 0xffff, 0, 0, 0, 8, 0, 0x3958, 0x0ce5b8ef053cef48ULL },   /* 0x1c370c0 */
+    { EP122_DJDB_MARK_DIRTY, 0xffff, 0, 0, 0, 8, 0, 0xb4f8, 0xf4b551447bd78289ULL },   /* 0x1c3ea30 */
+    { EP122_DJDB_MARK_DIRTY_PLAIN, 0xffff, 0, 0, 0, 8, 0, 0xb4f8, 0xfea0da6be0c2c899ULL },   /* 0x1c3d4c0 */
+    { EP122_DJDB_BUFFER_GET_PAGE, 0xffff, 0, 0, 0, 8, 0, 0x47e5, 0xa6d98b6d253cb35bULL },   /* 0x1c3f6f0 */
 };
 #define EP122_N_FN 123
 
@@ -564,11 +564,11 @@ static const struct ep122_data_spec {
     unsigned short src;    /* the function symbol to read it out of */
     unsigned short insn;   /* instruction index of the ADRP */
 } k_ep122_data[] = {
-    { EP122_DJDB_CONTEXT_SLOT, EP122_DJDB_CONTEXT, 0 },   /* 0x66d6a00 */
-    { EP122_SKIN_FG, EP122_KBD_SHOW, 10 },   /* 0x66d5f08 */
-    { EP122_SKIN_FG, EP122_KBD_SHOW, 14 },   /* 0x678f218 */
-    { EP122_SKIN_BG, EP122_POPUP_CTOR, 9 },   /* 0x66d5f68 */
-    { EP122_SKIN_BG, EP122_POPUP_CTOR, 1 },   /* 0x678f2b0 */
+    { EP122_DJDB_CONTEXT_SLOT, EP122_DJDB_CONTEXT, 0 },   /* 0x6699290 */
+    { EP122_SKIN_FG, EP122_KBD_SHOW, 10 },   /* 0x6698798 */
+    { EP122_SKIN_FG, EP122_KBD_SHOW, 14 },   /* 0x6748a98 */
+    { EP122_SKIN_BG, EP122_POPUP_CTOR, 9 },   /* 0x66987f8 */
+    { EP122_SKIN_BG, EP122_POPUP_CTOR, 1 },   /* 0x6748b30 */
 };
 #define EP122_N_DATA 5
 
@@ -578,12 +578,12 @@ static const struct ep122_call_spec {
     unsigned short src;    /* the function symbol that calls it */
     unsigned short insn;   /* instruction index of the BL */
 } k_ep122_call[] = {
-    { EP122_CUE_LINK_DECK, EP122_GATE_BACK_CUE, 29 },   /* 0x1823280 */
-    { EP122_CUE_LINK_DECK, EP122_GATE_BACK_CUE, 43 },   /* 0x1a5f520 */
-    { EP122_CUE_LINK_FACADE, EP122_CUE_FACADE_FWD, 7 },   /* 0x800418 */
-    { EP122_CUE_LINK_FACADE, EP122_CUE_FACADE_FWD, 13 },   /* 0x851240 */
-    { EP122_TIR_CACHE_LINK, EP122_BEATGRID_OFF_REGIST_REQ, 7 },   /* 0x6e0268 */
-    { EP122_TIR_CACHE_LINK, EP122_BEATGRID_OFF_REGIST_REQ, 11 },   /* 0x70f680 */
+    { EP122_CUE_LINK_DECK, EP122_GATE_BACK_CUE, 29 },   /* 0x17fe0b0 */
+    { EP122_CUE_LINK_DECK, EP122_GATE_BACK_CUE, 43 },   /* 0x1a32630 */
+    { EP122_CUE_LINK_FACADE, EP122_CUE_FACADE_FWD, 7 },   /* 0x7fcfd8 */
+    { EP122_CUE_LINK_FACADE, EP122_CUE_FACADE_FWD, 13 },   /* 0x84e6d0 */
+    { EP122_TIR_CACHE_LINK, EP122_BEATGRID_OFF_REGIST_REQ, 7 },   /* 0x6ddba0 */
+    { EP122_TIR_CACHE_LINK, EP122_BEATGRID_OFF_REGIST_REQ, 11 },   /* 0x70cfb0 */
 };
 #define EP122_N_CALL 6
 
