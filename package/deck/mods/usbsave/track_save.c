@@ -37,6 +37,7 @@
  *   to this deck's own stick.
  */
 #include "usbsave/usbsave.h"
+#include "theme/theme.h"
 
 #include <dirent.h>
 #include <errno.h>
@@ -422,10 +423,16 @@ static int read_box_hdr(int fd, int64_t off, int64_t limit, struct box_hdr *b)
 
 /* Write `src_path`'s bytes into `dst`, with `moov` replaced by a tagged one.
  * Returns 0 when the tagged copy was written, -1 when anything at all was
- * unexpected -- `dst` is then the caller's to remove, and it falls back. */
+ * unexpected -- `dst` is then the caller's to remove, and it falls back.
+ *
+ * `why` receives WHICH gate refused. Every failure here ends the same way, in a
+ * verbatim copy with no tags and no cover, and the log used to say only "no tag
+ * rewrite" for all of them -- so a source that is fragmented, one whose box sizes are
+ * torn, and one the tag writer declined all read identically, and a whole save's worth
+ * of metadata was lost with nothing to say which. One gate, one sentence. */
 static int copy_with_tags(int dst, const char *src_path,
                           const struct mod_mp4_tag *tags, int ntags,
-                          int64_t size)
+                          int64_t size, char *why, size_t why_cap)
 {
     struct box_hdr moov, b;
     int64_t moov_at = -1, moov_size = 0, mdat_at = -1, at = 0;
@@ -434,18 +441,25 @@ static int copy_with_tags(int dst, const char *src_path,
     size_t cap;
     int in, rc = -1;
 
+    if (why && why_cap)
+        why[0] = '\0';
+    /* snprintf runs before the jump, so errno is still the failing call's -- the
+     * cleanup at `out` is what would lose it. */
+#define FAIL(...) do { if (why && why_cap) snprintf(why, why_cap, __VA_ARGS__); \
+                       goto out; } while (0)
+
     in = open(src_path, O_RDONLY | O_CLOEXEC);
     if (in < 0)
-        return -1;
+        FAIL("source open: %s", strerror(errno));
 
     /* Walk the top level. A fragmented file (`moof`) is refused outright: its
      * sample offsets live in the fragments, not in `moov`, and getting those
      * wrong is a file that plays as noise. */
     while (at < size) {
         if (read_box_hdr(in, at, size, &b) != 0)
-            goto out;
+            FAIL("box header at %lld of %lld", (long long)at, (long long)size);
         if (strcmp(b.type, "moof") == 0)
-            goto out;
+            FAIL("fragmented: moof at %lld", (long long)b.off);
         if (strcmp(b.type, "moov") == 0) {
             moov_at = b.off;
             moov_size = b.size;
@@ -455,8 +469,10 @@ static int copy_with_tags(int dst, const char *src_path,
             mdat_at = b.off;
         at += b.size;
     }
-    if (moov_at < 0 || moov_size <= moov.hdr)
-        goto out;
+    if (moov_at < 0)
+        FAIL("no moov in %lld bytes", (long long)size);
+    if (moov_size <= moov.hdr)
+        FAIL("moov too small: %lld bytes", (long long)moov_size);
 
     moov_buf = malloc((size_t)moov_size);
     /* Room for exactly the tags being written rather than a guess: each is its
@@ -474,31 +490,46 @@ static int copy_with_tags(int dst, const char *src_path,
                 need += 12 + tags[t].free_name_len;
         }
         if ((uint64_t)need > (uint64_t)-1 - moov_size)
-            goto out;
+            FAIL("tag payload overflows a size_t");
         cap = (size_t)moov_size + need;
     }
     new_moov = malloc(cap);
     if (!moov_buf || !new_moov)
-        goto out;
+        FAIL("out of memory for %zu bytes of moov", cap);
     if (read_at(in, moov_buf, (size_t)moov_size, moov_at) != 0)
-        goto out;
+        FAIL("moov read at %lld: %s", (long long)moov_at, strerror(errno));
 
-    new_len = mod_mp4_add_tags(moov_buf, (size_t)moov_size, tags, ntags,
-                               mdat_at > moov_at, new_moov, cap, &grew);
-    if (new_len <= 0)
-        goto out;                                /* nothing to add, or refused */
+    {
+        int ref = MOD_MP4_WHY_NONE;
+        uint64_t ref_at = 0;
+
+        new_len = mod_mp4_add_tags_why(moov_buf, (size_t)moov_size, tags, ntags,
+                                       mdat_at > moov_at, new_moov, cap, &grew,
+                                       &ref, &ref_at);
+        /* 0 is not a refusal. It means every field is already in the file, and the
+         * verbatim copy this falls back to is then exactly right -- the tags are
+         * already there and nothing needed writing. Only -1 is a refusal, and `ref`
+         * is which gate: the two that matter here want opposite fixes. A source whose
+         * EXISTING ilst will not walk is a parsing limit worth working around; one
+         * whose chunk offsets will not rewrite is a file this must not touch. */
+        if (new_len == 0)
+            FAIL("nothing to add (every field already present)");
+        if (new_len < 0)
+            FAIL("add_tags refused: %s at %llu", mod_mp4_why_name(ref),
+                 (unsigned long long)ref_at);
+    }
 
     /* The bytes before `moov` do not move, so they can go straight out; the
      * media after it moves only if `moov` was in front of it, which
      * mod_mp4_add_tags has already accounted for in the offsets it rewrote. */
     if (copy_range(in, dst, 0, moov_at) != 0)
-        goto out;
+        FAIL("prefix copy: %s", strerror(errno));
     if (write_all(dst, new_moov, (size_t)new_len) != 0)
-        goto out;
+        FAIL("moov write: %s", strerror(errno));
     if (copy_range(in, dst, moov_at + moov_size, size - (moov_at + moov_size)) != 0)
-        goto out;
+        FAIL("media copy: %s", strerror(errno));
     if (fsync(dst) != 0)
-        goto out;
+        FAIL("fsync: %s", strerror(errno));
     MDBG("usbsave: tagged %s (%lld bytes of moov, +%lld)\n", src_path,
          (long long)moov_size, (long long)grew);
     rc = 0;
@@ -509,6 +540,7 @@ out:
     close(in);
     return rc;
 }
+#undef FAIL
 
 /* The title atom's name, as raw bytes: 0xA9 is outside a plain char's range, so a
  * string literal for it is both wrong and a warning, and it is a four-character
@@ -519,6 +551,20 @@ static const char TAG_ALBUM[4]  = { (char)0xA9, 'a', 'l', 'b' };
 static const char TAG_GENRE[4]  = { (char)0xA9, 'g', 'e', 'n' };
 static const char TAG_DATE[4]   = { (char)0xA9, 'd', 'a', 'y' };
 static const char TAG_KEY[4]    = { '-', '-', '-', '-' };
+/* Comment. Nothing to do with a comment on the track: it carries the artwork's own
+ * URL, taken from the deck's cached record for the release image. The deck only ever
+ * fetches that image at the size it displays -- 240x240 for a streamed track -- and
+ * the URL names the size, so writing it down is what makes the larger versions the
+ * store offers findable again later. Chosen over the composer atom, which was here
+ * first and is the field a reader is least likely to show. */
+static const char TAG_COMMENT[4] = { (char)0xA9, 'c', 'm', 't' };
+
+/* Composer. The same artwork URL as TAG_COMMENT, in BOTH fields on purpose: the two
+ * are what different readers actually show, and this mod cannot know which one is
+ * looking at the file. It was the composer alone first, then the comment alone, and
+ * the user asked for both -- so a file now carries the pointer twice rather than
+ * betting on one reader's idea of where a URL belongs. */
+static const char TAG_COMPOSER[4] = { (char)0xA9, 'w', 'r', 't' };
 
 /* The deck's BPM readout is a display string -- "112.0" -- and tmpo is hundredths
  * of a BPM. The readout carries one decimal, so the hundredths digit is a zero we
@@ -551,15 +597,21 @@ static int write_copy(const char *path, const char *tmp,
     int dst;
 
     if (ntags > 0) {
+        char why[160];
+
         dst = open(tmp, O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0644);
         if (dst < 0)
             return -1;
-        if (copy_with_tags(dst, path, tags, ntags, size) == 0) {
+        if (copy_with_tags(dst, path, tags, ntags, size, why, sizeof(why)) == 0) {
             close(dst);
             return 0;
         }
         close(dst);
-        MDBG("usbsave: %s: no tag rewrite, copying it as it is\n", path);
+        /* The gate, not just the outcome. This line used to read the same for eleven
+         * different refusals, and a verbatim copy carries neither the tags nor the
+         * cover -- so "which one" is the whole of the diagnosis. */
+        MDBG("usbsave: %s: no tag rewrite (%s), copying it as it is\n", path,
+             why[0] ? why : "unknown");
         unlink(tmp);
     }
     return stem_copy_file(path, tmp);
@@ -811,6 +863,8 @@ struct cached_meta {
     char key[16];                   /* Camelot, "10A" */
     long bpm;
     char cover_path[STEM_CACHE_PATH_MAX];
+    char cover_uri[512];           /* the artwork's own URL: the comment and the
+                                    * composer field both carry it */
     int  cover_jpeg;
 };
 
@@ -925,6 +979,8 @@ static void read_cached_meta(const char *src_path, struct cached_meta *cm)
     if (!mod_json_path_str(js, len, COVER_PATH, 3, uri, sizeof(uri)) &&
         !mod_json_obj_str(js, len, "image", "uri", uri, sizeof(uri)))
         uri[0] = '\0';
+    if (uri[0])
+        snprintf(cm->cover_uri, sizeof(cm->cover_uri), "%s", uri);
     if (uri[0] && cover_key_from_uri(uri, hash, sizeof(hash))) {
         struct cover_key key;
         const char *dot;
@@ -965,13 +1021,90 @@ static void flatten(char *dst, size_t cap, const char *src)
     dst[n] = '\0';
 }
 
+
+/* The cover is no longer dropped anywhere for inspection. `preview_cover` wrote the
+ * image to /mnt/cdj3k-cover-last.<ext> so a save's embedded artwork could be seen
+ * without mounting the stick, and it did its job: on 2026-10-16 it showed that image
+ * to be the WRONG one. Every file was getting the same 13230-byte 240x240 -- the
+ * artwork the deck happened to decode once at startup out of its own persisted cache,
+ * not the loaded track's. See the cover note in save_one. */
+
+
+
+/* session_cover_get / session_cover_put are GONE, and the reason matters more than the
+ * code did. They kept the decoder capture in /run under the release's hash so a later
+ * track of the same release could reuse it -- sound only if the capture were the
+ * release's artwork. It was not: 2026-10-16, on the deck, every file came out with the
+ * SAME image, and the user identified it as a previous track's album art. The deck
+ * routes artwork through ImageFileFormat::decodeImage once per boot at most (from its
+ * own persisted cache), so the capture is one arbitrary picture, and a cache of it
+ * propagated that picture under every release's hash. Keying a wrong image does not
+ * make it right. */
+
+/* ---- did it actually land? ------------------------------------------------- *
+ *
+ * Read back the file that was just written and report which atoms are really in it.
+ * Everything else this mod says about a save is what it ASKED the tag writer for: the
+ * summary line is built from the same values that were passed to mod_mp4_splice, so a
+ * splice that silently declined -- or a field skipped because the file already carried
+ * one -- reads identically to success. Reported no image and no comment with the log
+ * showing both, four times over, which is why this exists.
+ *
+ * Crude on purpose: a scan for the four-byte atom ids. A false positive needs those
+ * exact bytes in a payload, and the interesting answer is presence or absence, not a
+ * parse. */
+static void verify_saved(const char *path, const char *cover_src)
+{
+    static uint8_t buf[65536];
+    int fd;
+    ssize_t n;
+    size_t i;
+    int have_nam = 0, have_cmt = 0, have_tmpo = 0, have_covr = 0;
+    size_t covr_at = 0;
+
+    fd = open(path, O_RDONLY | O_CLOEXEC);
+    if (fd < 0) {
+        MWARN("usbsave: written file cannot be reopened to verify it (%s)\n", path);
+        return;
+    }
+    n = read(fd, buf, sizeof(buf));
+    close(fd);
+    if (n <= 0) {
+        MWARN("usbsave: written file read back empty\n");
+        return;
+    }
+    for (i = 0; i + 4 <= (size_t)n; i++) {
+        if (buf[i] == 0xA9 && buf[i+1] == 'n' && buf[i+2] == 'a' && buf[i+3] == 'm')
+            have_nam = 1;
+        if (buf[i] == 0xA9 && buf[i+1] == 'c' && buf[i+2] == 'm' && buf[i+3] == 't')
+            have_cmt = 1;
+        if (buf[i] == 't' && buf[i+1] == 'm' && buf[i+2] == 'p' && buf[i+3] == 'o')
+            have_tmpo = 1;
+        if (buf[i] == 'c' && buf[i+1] == 'o' && buf[i+2] == 'v' && buf[i+3] == 'r') {
+            have_covr = 1;
+            if (!covr_at)
+                covr_at = i;
+        }
+    }
+    MDBG("usbsave: VERIFY %zd bytes read back: title=%d comment=%d tmpo=%d covr=%d\n",
+         n, have_nam, have_cmt, have_tmpo, have_covr);
+    /* What an ilst `data` atom holds for an image: [size]['data'][type:4][locale:4]
+     * [payload]. The type says 13 for JPEG and 14 for PNG, and the payload's first
+     * bytes say whether what went in was a whole image at all. */
+    if (have_covr && covr_at + 24 <= (size_t)n) {
+        const uint8_t *d = buf + covr_at;
+        MDBG("usbsave:   covr data-type=%u payload starts %02x %02x %02x %02x (source=%s)\n",
+             (unsigned)d[16], d[20], d[21], d[22], d[23], cover_src);
+    }
+}
+
 static void report_saved(const char *file, const struct mod_probe *tagged,
                          const struct cached_meta *cm, int bpm_int,
                          const char *key, const char *cover, int64_t took_ms,
                          const char *status)
 {
     char line[768], tmpn[STEM_CACHE_PATH_MAX];
-    char f[256], t[256], a[256], al[256], g[128], k[64], y[16], c[16];
+    char f[256], t[256], a[256], al[256], g[128], k[64], y[16], c[16], u[512];
     int fd;
 
     flatten(f, sizeof(f), file);
@@ -982,11 +1115,12 @@ static void report_saved(const char *file, const struct mod_probe *tagged,
     flatten(k, sizeof(k), key[0] ? key : "-");
     flatten(y, sizeof(y), cm->year[0] ? cm->year : "-");
     flatten(c, sizeof(c), cover);
+    flatten(u, sizeof(u), cm->cover_uri[0] ? cm->cover_uri : "-");
 
     snprintf(line, sizeof(line),
              "file=\"%s\" title=\"%s\" artist=\"%s\" album=\"%s\" genre=\"%s\" "
-             "year=\"%s\" key=\"%s\" bpm=%d cover=%s took=%lldms status=%s",
-             f, t, a, al, g, y, k, bpm_int, c, (long long)took_ms,
+             "year=\"%s\" key=\"%s\" bpm=%d cover=%s art=\"%s\" took=%lldms status=%s",
+             f, t, a, al, g, y, k, bpm_int, c, u, (long long)took_ms,
              status ? status : "-");
     MDBG("usbsave: saved %s\n", line);
 
@@ -1081,6 +1215,33 @@ static int numbered_name(const char *name, int n, const char *dir,
     return (wrote < 0 || (size_t)wrote >= cap) ? -1 : 0;
 }
 
+/* Leave the image that went into the file where it can be LOOKED AT, named for the
+ * track it was saved with.
+ *
+ * /mnt is the deck's own eMMC, which the host can read from a copy of emmc.qcow2
+ * without mounting the stick at all. This exists because looking is the only check
+ * that has ever caught a wrong cover here: the size of the write and a `covr=1`
+ * read-back both say an image arrived, and neither says WHICH image. Named per track
+ * so several can be compared rather than the last one overwriting the rest. */
+static void cover_preview(const char *src_path, const uint8_t *bytes, size_t len)
+{
+    char id[32], out[96];
+    int fd;
+
+    if (!bytes || len == 0)
+        return;
+    if (!track_id_of(src_path, id, sizeof(id)))
+        snprintf(id, sizeof(id), "unknown");
+    if (snprintf(out, sizeof(out), "/mnt/cdj3k-drawn-%s.png", id) >= (int)sizeof(out))
+        return;
+    fd = open(out, O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0644);
+    if (fd < 0)
+        return;
+    if (write_all(fd, bytes, len) == 0)
+        MDBG("usbsave: cover left for inspection at %s (%zu bytes)\n", out, len);
+    close(fd);
+}
+
 static void save_one(const char *path, const struct kit_band_meta *meta,
                      int64_t seen_ms)
 {
@@ -1089,12 +1250,19 @@ static void save_one(const char *path, const struct kit_band_meta *meta,
     char ext[64], key_buf[16];
     struct cached_meta cm;
     struct mod_probe tagged;
-    struct mod_mp4_tag tags[8];
+    /* Sized by the module's own limit rather than by a number chosen here: this list
+     * and that capacity drifted apart once already -- see MOD_MP4_MAX_TAGS. This
+     * builds TEN (title, artist, album, genre, year, tmpo, the key, the artwork's URL
+     * in both the comment and the composer field, and covr), so the constant must stay
+     * above that. */
+    struct mod_mp4_tag tags[MOD_MP4_MAX_TAGS];
     uint8_t bpm_be[2];
-    uint8_t *art = NULL;            /* the cover: cached JPEG or rendered PNG */
+    uint8_t *art = NULL;            /* the cover: a cached JPEG, or the drawn PNG */
     size_t art_len = 0;
     int art_jpeg = 0;
     const char *cover_src = "none";
+    char cover_src_buf[32];         /* "<source>-<w>x<h>", named in the log line */
+    int32_t aw = 0, ah = 0;         /* the drawn bitmap's size, when that is the source */
     const char *base, *dot, *key;
     int64_t size = 0, after, t0, tags_payload = 0;
     int gave_up = 0, attempt, n, tags_n = 0, bpm_x100 = 0;
@@ -1108,7 +1276,7 @@ static void save_one(const char *path, const struct kit_band_meta *meta,
     if (mkdir(dir, 0755) != 0 && errno != EEXIST)
         return;
 
-    /* Wait for the source to finish arriving first: the size it settles at is
+    /* Wait for the source to finish arriving first: the size it settles at does
      * what tells a name collision from the same track saved in an earlier boot,
      * so the wait has to happen before the name is resolved. */
     t0 = usbsave_now_ms();
@@ -1155,46 +1323,66 @@ static void save_one(const char *path, const struct kit_band_meta *meta,
     if (snprintf(dest, sizeof(dest), "%s/%s", dir, name) >= (int)sizeof(dest))
         return;
 
-    /* The cover: the deck's own cached JPEG when the cache named one -- the real
-     * image, correctly cropped -- and otherwise the bitmap the deck drew, encoded
-     * here. Encoded rather than inside the tag writer because what an ilst holds is
-     * a finished image, and that module's job is the container, not the codec. */
+    /* The cover, in the order the user asked for: the 240x240 the deck drew if there
+     * is one, else the larger 320x240.
+     *
+     * But FIRST, when it exists at all: the Beatport client's cached image whose NAME
+     * carries the hash of the release's own artwork URL. That one is the only source
+     * that cannot be another release's picture, because the deck's record for this
+     * track is what named it. It is almost never there (Artwork/ is usually empty),
+     * which is why the drawn bitmap below has to exist at all. */
     if (cm.cover_path[0]) {
         art = (uint8_t *)read_capped(cm.cover_path, COVER_MAX_BYTES, &art_len);
         if (art && art_len > 0) {
             art_jpeg = cm.cover_jpeg;
             cover_src = cm.cover_jpeg ? "cache-jpg" : "cache-png";
+            MDBG("usbsave: cover for this release from %s (%zu bytes)\n",
+                 cm.cover_path, art_len);
         } else {
             free(art);
             art = NULL;
             art_len = 0;
         }
     }
-    if (!art) {
-        int32_t aw = 0, ah = 0;
 
-        if (theme_artwork_size(&aw, &ah) && aw > 0 && ah > 0) {
-            size_t need = MOD_PNG_MAX(aw, ah);
-            uint8_t *rgb = malloc((size_t)aw * (size_t)ah * 3);
+    /* And when the cache has nothing for this release -- which is almost always --
+     * the drawn bitmap. These are the pixels juce handed to drawImage, at
+     * the size the spot that showed them uses -- so it is the artwork as displayed
+     * rather than the file that was fetched. Two things follow, and both are stated
+     * rather than hidden: it is a re-render (scaled, and the player view's 320x240 is
+     * stretched to 4:3 where the 240x240 is square and truer), and WHICH image it is
+     * is not knowable here -- the browse view draws artwork for the row it has
+     * highlighted, not for the track being saved. So the image that would be written
+     * is also dumped to /mnt (see cover_preview below) where it can be looked at.
+     *
+     * The badge that once came out as a numeral is excluded by size: theme/artwork.c
+     * keeps only these two sizes, and the deck draws that badge at 20x30. */
+    if (theme_artwork_size(&aw, &ah) && aw > 0 && ah > 0) {
+        size_t need = MOD_PNG_MAX((size_t)aw, (size_t)ah);
+        uint8_t *rgb = malloc((size_t)aw * (size_t)ah * 3);
 
-            art = malloc(need);
-            if (rgb && art) {
-                int64_t png;
+        art = (uint8_t *)malloc(need);
+        if (rgb && art) {
+            int64_t png;
 
-                if (theme_artwork_rgb(rgb, (size_t)aw * (size_t)ah * 3, &aw, &ah) > 0)
-                    png = mod_png_rgb(rgb, aw, ah, art, need);
-                else
-                    png = -1;
-                free(rgb);
-                if (png > 0) {
-                    art_len = (size_t)png;
-                    cover_src = "render";
-                }
+            if (theme_artwork_rgb(rgb, (size_t)aw * (size_t)ah * 3, &aw, &ah) > 0)
+                png = mod_png_rgb(rgb, (size_t)aw, (size_t)ah, art, need);
+            else
+                png = -1;
+            free(rgb);
+            if (png > 0) {
+                art_len = (size_t)png;
+                art_jpeg = 0;                       /* the encoder writes PNG */
+                snprintf(cover_src_buf, sizeof(cover_src_buf), "drawn-%ldx%ld",
+                         (long)aw, (long)ah);
+                cover_src = cover_src_buf;
+                MDBG("usbsave: cover from the drawn bitmap: %ldx%ld -> %zu bytes of PNG\n",
+                     (long)aw, (long)ah, art_len);
             }
-            if (art_len == 0) {
-                free(art);
-                art = NULL;
-            }
+        }
+        if (art_len == 0) {
+            free(art);
+            art = NULL;
         }
     }
 
@@ -1256,8 +1444,9 @@ static void save_one(const char *path, const struct kit_band_meta *meta,
      * The readers this has to satisfy do not: the saved file read back showed
      * "11200" where the deck's own screen said 112, so what goes in is the number
      * a person would say. The cost, stated plainly: a strictly-conforming reader
-     * would now show 1.12 BPM for a track of 112. That is the trade being made,
-     * and it is reversible in this one line. */
+     * would show 1.12 BPM for a track of 112. That is the trade being made, and the
+     * user has confirmed the whole number is what they want -- so this is settled,
+     * and a "BPM does not show" report is NOT this line. */
     {
         /* Rounded, not truncated: the deck's readout carries a decimal, so a
          * track at 112.5 would otherwise be tagged 112 rather than 113. */
@@ -1301,6 +1490,26 @@ static void save_one(const char *path, const struct kit_band_meta *meta,
         tags_payload += 8 + 16 + (int64_t)tags[tags_n].value_len + 12 +
                         (int64_t)tags[tags_n].free_mean_len + 12 +
                         (int64_t)tags[tags_n].free_name_len;
+        tags_n++;
+    }
+    /* The artwork's URL, in the comment field AND the composer field. The deck fetches
+     * the cover only at the size it displays, and that size is in the URL, so this is
+     * the pointer back to the larger versions the store has -- 500x500, 1400x1400 --
+     * without this project ever contacting the store itself. Written after the tags
+     * that came from the deck's own screens. Both fields carry it because which one a
+     * reader displays is not knowable from here; see TAG_COMPOSER. */
+    if (cm.cover_uri[0]) {
+        memcpy(tags[tags_n].name, TAG_COMMENT, 4);
+        tags[tags_n].type = MOD_MP4_TEXT;
+        tags[tags_n].value = cm.cover_uri;
+        tags[tags_n].value_len = strlen(cm.cover_uri);
+        tags_payload += 8 + 16 + (int64_t)tags[tags_n].value_len;
+        tags_n++;
+        memcpy(tags[tags_n].name, TAG_COMPOSER, 4);
+        tags[tags_n].type = MOD_MP4_TEXT;
+        tags[tags_n].value = cm.cover_uri;
+        tags[tags_n].value_len = strlen(cm.cover_uri);
+        tags_payload += 8 + 16 + (int64_t)tags[tags_n].value_len;
         tags_n++;
     }
     if (art && art_len > 0) {
@@ -1355,6 +1564,7 @@ static void save_one(const char *path, const struct kit_band_meta *meta,
              * loaded, and a panel that says nothing about it is indistinguishable
              * from a save that failed. The name is the one it matched, which may
              * carry a "(2)" -- that is the file that was found, and is worth seeing. */
+            verify_saved(dest, cover_src);
             report_saved(final ? final + 1 : dest, &tagged, &cm, bpm_x100 / 100,
                          key, cover_src, usbsave_now_ms() - seen_ms,
                          "already-saved");
@@ -1394,6 +1604,7 @@ static void save_one(const char *path, const struct kit_band_meta *meta,
              * what made a broken filename look like the deck never loading the
              * track. */
             snprintf(why, sizeof(why), "failed: %s", strerror(e));
+            verify_saved(dest, cover_src);
             report_saved(final ? final + 1 : dest, &tagged, &cm, bpm_x100 / 100,
                          key, cover_src, usbsave_now_ms() - seen_ms, why);
             free(art);
@@ -1454,6 +1665,14 @@ static void save_one(const char *path, const struct kit_band_meta *meta,
         {
             const char *final = strrchr(dest, '/');
 
+            /* ONCE. This pair was duplicated here -- verify, preview, preview,
+             * verify -- which is why every successful save logged its VERIFY line
+             * twice and wrote the preview image to the eMMC twice. Found while
+             * removing preview_cover, 2026-10-16; nothing depended on the doubling. */
+            verify_saved(dest, cover_src);
+            /* The image that went in, where it can be looked at. Looked at, not
+             * trusted -- see cover_preview. */
+            cover_preview(path, art, art_len);
             report_saved(final ? final + 1 : dest, &tagged, &cm, bpm_x100 / 100, key,
                          cover_src, took_ms, "written");
         }

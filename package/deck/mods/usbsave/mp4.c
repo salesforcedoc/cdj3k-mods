@@ -292,12 +292,13 @@ static int child_named(const uint8_t *b, uint64_t start, uint64_t end,
     return 0;
 }
 
-int64_t mod_mp4_add_tags(const uint8_t *moov, size_t moov_len,
-                         const struct mod_mp4_tag *tags, int ntags,
-                         int moov_precedes_mdat,
-                         uint8_t *out, size_t out_cap, int64_t *grew)
+int64_t mod_mp4_add_tags_why(const uint8_t *moov, size_t moov_len,
+                             const struct mod_mp4_tag *tags, int ntags,
+                             int moov_precedes_mdat,
+                             uint8_t *out, size_t out_cap, int64_t *grew,
+                             int *why, uint64_t *where)
 {
-    const struct mod_mp4_tag *keep[8];
+    const struct mod_mp4_tag *keep[MOD_MP4_MAX_TAGS];
     uint64_t moov_size, hdr, udta = 0, udta_sz = 0, meta = 0, meta_sz = 0;
     uint64_t ilst = 0, ilst_sz = 0, insert_at, payload = 0;
     uint64_t patch[4];
@@ -305,18 +306,28 @@ int64_t mod_mp4_add_tags(const uint8_t *moov, size_t moov_len,
     int nkeep = 0, npatch = 0, have_udta, have_meta, have_ilst, i, j;
     uint8_t *hole;
 
+    /* Every refusal below is the same -1 to the caller, and the caller's fallback is
+     * the same for all of them. Naming the gate here is the only place the
+     * difference survives. */
+#define REFUSE(code, off) do { if (why) *why = (code); if (where) *where = (off); \
+                               return -1; } while (0)
+
+    if (why)
+        *why = MOD_MP4_WHY_NONE;
+    if (where)
+        *where = 0;
     if (!moov || !tags || ntags <= 0 || !out)
-        return -1;
+        REFUSE(MOD_MP4_WHY_ARGS, 0);
     if (grew)
         *grew = 0;
     /* The caller hands over exactly one box. Anything else means it read the
      * wrong range, which is not something to paper over. */
     if (ntags > (int)(sizeof(keep) / sizeof(keep[0])))
-        return -1;
+        REFUSE(MOD_MP4_WHY_ARGS, (uint64_t)ntags);
     if (box_at(moov, 0, moov_len, &moov_size, &hdr, &t) != 0)
-        return -1;
+        REFUSE(MOD_MP4_WHY_MOOV_BOX, 0);
     if (!same4(t, "moov") || moov_size != moov_len)
-        return -1;
+        REFUSE(MOD_MP4_WHY_NOT_MOOV, moov_size);
 
     have_udta = find_child(moov, hdr, moov_size, "udta", &udta, &udta_sz) == 0;
     if (have_udta) {
@@ -349,7 +360,7 @@ int64_t mod_mp4_add_tags(const uint8_t *moov, size_t moov_len,
                 const uint8_t *ct;
 
                 if (box_at(moov, off, ilst + ilst_sz, &size, &chdr, &ct) != 0)
-                    return -1;
+                    REFUSE(MOD_MP4_WHY_ILST_CHILD, off);
                 if (same4(ct, tags[i].name)) {
                     /* A freeform id is shared by every freeform field, so the id
                      * alone is not a match: the `name` child says which one. */
@@ -397,7 +408,7 @@ int64_t mod_mp4_add_tags(const uint8_t *moov, size_t moov_len,
     patch[npatch++] = 0;                /* moov is always grown          */
 
     if (moov_len + payload > out_cap)
-        return -1;                      /* the caller's buffer is too small */
+        REFUSE(MOD_MP4_WHY_OUT_CAP, moov_len + payload);
 
     /* Copy with the hole. memmove because the caller may have passed a buffer
      * that overlaps `moov` -- cheap insurance for a mistake made elsewhere. */
@@ -436,13 +447,40 @@ int64_t mod_mp4_add_tags(const uint8_t *moov, size_t moov_len,
     /* The media moved only if moov was in front of it. */
     if (moov_precedes_mdat && payload > 0) {
         if (shift_chunks(out, moov_size + payload, payload) != 0)
-            return -1;
+            REFUSE(MOD_MP4_WHY_SHIFT, 0);
     }
 
     j = (int)(hole - out);              /* the writer above must land exactly */
     if ((uint64_t)j != insert_at + payload)
-        return -1;
+        REFUSE(MOD_MP4_WHY_LANDING, (uint64_t)j);
     if (grew)
         *grew = (int64_t)payload;
     return (int64_t)(moov_size + payload);
+#undef REFUSE
+}
+
+/* The plain entry point, and the one the tests hold: the answer without the reason.
+ * A caller that only needs to fall back gets the same behaviour it always had. */
+int64_t mod_mp4_add_tags(const uint8_t *moov, size_t moov_len,
+                         const struct mod_mp4_tag *tags, int ntags,
+                         int moov_precedes_mdat,
+                         uint8_t *out, size_t out_cap, int64_t *grew)
+{
+    return mod_mp4_add_tags_why(moov, moov_len, tags, ntags, moov_precedes_mdat,
+                                out, out_cap, grew, NULL, NULL);
+}
+
+const char *mod_mp4_why_name(int why)
+{
+    switch (why) {
+    case MOD_MP4_WHY_NONE:       return "none";
+    case MOD_MP4_WHY_ARGS:       return "bad arguments";
+    case MOD_MP4_WHY_MOOV_BOX:   return "moov header will not walk";
+    case MOD_MP4_WHY_NOT_MOOV:   return "not a moov, or its size disagrees";
+    case MOD_MP4_WHY_ILST_CHILD: return "a child of the existing ilst will not walk";
+    case MOD_MP4_WHY_OUT_CAP:    return "caller's buffer too small";
+    case MOD_MP4_WHY_SHIFT:      return "stco/co64 offsets will not rewrite";
+    case MOD_MP4_WHY_LANDING:    return "writer did not land on the hole";
+    }
+    return "unknown";
 }

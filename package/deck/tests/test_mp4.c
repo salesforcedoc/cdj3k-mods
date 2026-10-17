@@ -500,6 +500,7 @@ static void test_refuses_what_it_cannot_trust(void)
     CHECK_INT((int)mod_mp4_add_tags(src, (size_t)moov_len, tags, 1, 0,
                                     dst, sizeof(dst), &grew), -1);
     CHECK_INT((int)grew, 0);
+
     T_CASE("refusals: find() on a broken chain");
     {
         struct mod_mp4_box box;
@@ -511,6 +512,149 @@ static void test_refuses_what_it_cannot_trust(void)
         CHECK_INT(mod_mp4_find(junk, sizeof(junk), "moov", &box), 0);
         CHECK_U32((uint32_t)box.size, 8);
     }
+
+    /* And WHICH gate, because all three are the same -1 to a caller that only falls
+     * back -- and the fallbacks are not interchangeable. A source this cannot parse is
+     * copied verbatim with no tags and no cover, and measured 2026-10-16 that is
+     * exactly what happened with nothing in the log to say which refusal it was. */
+    T_CASE("refusals say which gate");
+    {
+        int why = -1;
+
+        CHECK_INT((int)mod_mp4_add_tags_why(src, (size_t)moov_len - 1, tags, 1, 0,
+                                            dst, sizeof(dst), &grew, &why, NULL), -1);
+        CHECK_INT(why, MOD_MP4_WHY_MOOV_BOX);
+        why = -1;
+        CHECK_INT((int)mod_mp4_add_tags_why(src + 8, (size_t)moov_len - 8, tags, 1, 0,
+                                            dst, sizeof(dst), &grew, &why, NULL), -1);
+        CHECK_INT(why, MOD_MP4_WHY_NOT_MOOV);
+        why = -1;
+        CHECK_INT((int)mod_mp4_add_tags_why(src, (size_t)moov_len, tags, 1, 0,
+                                            dst, sizeof(dst), &grew, &why, NULL), -1);
+        CHECK_INT(why, MOD_MP4_WHY_OUT_CAP);
+        /* The name table is part of the contract: every code has words, and a code
+         * nothing knows is not silently blank. */
+        CHECK_STR(mod_mp4_why_name(MOD_MP4_WHY_ILST_CHILD),
+                  "a child of the existing ilst will not walk");
+        CHECK(mod_mp4_why_name(9999) != NULL);
+        CHECK_INT((int)grew, 0);
+    }
+}
+
+static void test_a_broken_ilst_is_named_as_such(void)
+{
+    static uint8_t src[8192], dst[16384];
+    static const uint32_t offs[1] = { 44 };
+    struct mod_mp4_tag tags[1];
+    uint64_t moov_len, udta, udta_sz, meta, meta_sz, ilst, ilst_sz;
+    int64_t n, grew = 0;
+    int why = -1;
+    uint64_t at = 0;
+
+    /* The shape that refused on the deck: a source that ALREADY carries an ilst, so
+     * the gap-fill walk has to parse what is in the file before it can know which
+     * fields are missing. Built by the test's own builder, and the ilst is found by
+     * the test's own reader -- the module's idea of where it lives is not consulted,
+     * or this would agree with it about a file nobody else can read. */
+    moov_len = build_moov(src, 0, offs, 1, TAG_NAM, "Cream");
+    tags[0] = text_tag(TAG_ART, "Somebody");
+
+    T_CASE("an ilst that walks: added, and the gate reports none");
+    n = mod_mp4_add_tags_why(src, (size_t)moov_len, tags, 1, 0,
+                             dst, sizeof(dst), &grew, &why, &at);
+    CHECK(n > 0);
+    CHECK_INT(why, MOD_MP4_WHY_NONE);
+    CHECK(grew > 0);
+
+    T_CASE("an existing ilst child that will not walk is named, with its offset");
+    CHECK_INT(find(src, 0, moov_len, "udta", &udta, &udta_sz), 0);
+    CHECK_INT(find(src, udta, udta_sz, "meta", &meta, &meta_sz), 0);
+    CHECK_INT(find(src, meta + 4, meta_sz - 4, "ilst", &ilst, &ilst_sz), 0);
+
+    /* The first child claims more bytes than the ilst has left: the one thing that
+     * walks a chain off the end of its container. */
+    p32(src + ilst + 8, (uint32_t)(ilst_sz + 64));
+    why = -1;
+    at = 0;
+    CHECK_INT((int)mod_mp4_add_tags_why(src, (size_t)moov_len, tags, 1, 0,
+                                        dst, sizeof(dst), &grew, &why, &at), -1);
+    CHECK_INT(why, MOD_MP4_WHY_ILST_CHILD);
+    CHECK_INT((int)at, (int)(ilst + 8));
+}
+
+/* The set that was refused. Measured 2026-10-16 on the deck: a streamed track with a
+ * full record AND a cover is exactly the one that reaches nine tags, and mp4.c held
+ * eight -- so it was copied verbatim with no tags and no cover, and the log said only
+ * "no tag rewrite". A capacity that only the best-populated tracks can exceed is a
+ * bug that hides until everything works. */
+static void test_the_full_tag_set_the_caller_builds(void)
+{
+    static uint8_t src[8192], dst[32768];
+    static const uint32_t offs[1] = { 44 };
+    static const uint8_t cover[6] = { 0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10 };
+    static const char TAG_ALB[4] = { (char)0xA9, 'a', 'l', 'b' };
+    static const char TAG_GEN[4] = { (char)0xA9, 'g', 'e', 'n' };
+    static const char TAG_DAY[4] = { (char)0xA9, 'd', 'a', 'y' };
+    static const char TAG_CMT[4] = { (char)0xA9, 'c', 'm', 't' };
+    static const char TAG_WRT[4] = { (char)0xA9, 'w', 'r', 't' };
+    static const char URL[] = "https://geo-media.beatport.com/image_size/1400x1400/52acad8e.jpg";
+    struct mod_mp4_tag tags[MOD_MP4_MAX_TAGS];
+    uint64_t moov_len;
+    char got[256];
+    int64_t n, grew = 0;
+    int why = -1;
+
+    moov_len = build_moov(src, 0, offs, 1, NULL, NULL);
+    tags[0] = text_tag(TAG_NAM, "Too Deep (Original Mix)");
+    tags[1] = text_tag(TAG_ART, "Formula");
+    tags[2] = text_tag(TAG_ALB, "Too Deep");
+    tags[3] = text_tag(TAG_GEN, "140 / Deep Dubstep / Grime");
+    tags[4] = text_tag(TAG_DAY, "2026");
+    tags[5] = text_tag("tmpo", "140");
+    tags[6] = freeform_tag("com.apple.iTunes", "initialkey", "10B");
+    tags[7] = text_tag(TAG_CMT, URL);
+    tags[8] = text_tag(TAG_WRT, URL);
+    memset(&tags[9], 0, sizeof(tags[9]));
+    memcpy(tags[9].name, "covr", 4);
+    tags[9].type = MOD_MP4_JPEG;
+    tags[9].value = (const char *)cover;
+    tags[9].value_len = sizeof(cover);
+
+    T_CASE("the caller's full ten-tag set: accepted, and every field lands");
+    n = mod_mp4_add_tags_why(src, (size_t)moov_len, tags, 10, 0,
+                             dst, sizeof(dst), &grew, &why, NULL);
+    CHECK(n > 0);
+    CHECK_INT(why, MOD_MP4_WHY_NONE);
+    CHECK(grew > 0);
+    CHECK_INT(ilst_value(dst, 0, (uint64_t)n, TAG_NAM, got, sizeof(got)),
+              (int)strlen("Too Deep (Original Mix)"));
+    CHECK_STR(got, "Too Deep (Original Mix)");
+    CHECK_INT(ilst_value(dst, 0, (uint64_t)n, TAG_GEN, got, sizeof(got)),
+              (int)strlen("140 / Deep Dubstep / Grime"));
+    CHECK_STR(got, "140 / Deep Dubstep / Grime");
+    /* The URL, in BOTH fields it is written to: the two are what different readers
+     * show, and a file carrying only one is a file half the readers cannot point at
+     * the larger artwork from. */
+    CHECK_INT(ilst_value(dst, 0, (uint64_t)n, TAG_CMT, got, sizeof(got)),
+              (int)strlen(URL));
+    CHECK_STR(got, URL);
+    CHECK_INT(ilst_value(dst, 0, (uint64_t)n, TAG_WRT, got, sizeof(got)),
+              (int)strlen(URL));
+    CHECK_STR(got, URL);
+    CHECK_INT(ilst_type(dst, 0, (uint64_t)n, "covr"), MOD_MP4_JPEG);
+    CHECK_INT(ilst_freeform_value(dst, 0, (uint64_t)n, "initialkey",
+                                  got, sizeof(got)),
+              (int)strlen("10B"));
+    CHECK_STR(got, "10B");
+
+    T_CASE("past the capacity it is refused, by name");
+    /* One more than the limit: the check is before any tag is read, so naming a
+     * count this array cannot hold is safe and is exactly what the guard is for. */
+    why = -1;
+    CHECK_INT((int)mod_mp4_add_tags_why(src, (size_t)moov_len, tags,
+                                        MOD_MP4_MAX_TAGS + 1, 0,
+                                        dst, sizeof(dst), &grew, &why, NULL), -1);
+    CHECK_INT(why, MOD_MP4_WHY_ARGS);
 }
 
 static void test_freeform_atom(void)
@@ -587,6 +731,8 @@ int main(void)
     test_nothing_to_add_writes_nothing();
     test_shifts_chunk_offsets_when_moov_moves_the_media();
     test_refuses_what_it_cannot_trust();
+    test_a_broken_ilst_is_named_as_such();
+    test_the_full_tag_set_the_caller_builds();
     test_freeform_atom();
     test_freeform_gap_fill();
     return t_done("mp4");

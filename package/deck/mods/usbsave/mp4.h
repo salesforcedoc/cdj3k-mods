@@ -78,6 +78,23 @@ struct mod_mp4_tag {
  * not count; size one as MOD_MP4_TAG_MAX(vlen + mean_len + name_len + 24). */
 #define MOD_MP4_TAG_MAX(vlen) (8 + 16 + 8 + (vlen) + 8)
 
+/* How many tags one splice may be handed. THE CALLER'S LIST AND THIS MODULE'S
+ * CAPACITY ARE THE SAME NUMBER, in one place, because they were not.
+ *
+ * Measured 2026-10-16: track_save.c grew a ninth tag -- the artwork's URL, in the
+ * comment field -- and this module still held eight, so every track complete enough
+ * to produce all nine was refused ("add_tags refused: bad arguments at 9") and
+ * copied VERBATIM: no tags, and no cover either, because the cover ships in the same
+ * splice. The failure landed on exactly the best-populated tracks, and the log said
+ * only "no tag rewrite" for months of rounds. A shared constant is the fix; a comment
+ * is not, so the caller sizes its array with this too.
+ *
+ * 12 rather than 10, i.e. TWO MORE THAN THE CALLER BUILDS (ten: ©nam ©ART ©alb ©gen
+ * ©day tmpo the freeform key ©cmt ©wrt covr). Sizing it to the exact count is what
+ * broke: the tenth tag was added while this held eight, and a capacity with no
+ * headroom turns the next field into the same silent refusal. */
+#define MOD_MP4_MAX_TAGS 12
+
 /* ---- locating a top-level box --------------------------------------------- */
 
 struct mod_mp4_box {
@@ -113,5 +130,34 @@ int64_t mod_mp4_add_tags(const uint8_t *moov, size_t moov_len,
                          const struct mod_mp4_tag *tags, int ntags,
                          int moov_precedes_mdat,
                          uint8_t *out, size_t out_cap, int64_t *grew);
+
+/* Which gate refused. -1 answers "did it work"; it does not answer "why not", and
+ * every refusal ends the same way at the caller -- a verbatim copy with no tags and
+ * no cover. Measured 2026-10-16: a save reported `no tag rewrite (add_tags refused
+ * (-1))` on a track whose box walk was clean, and there was no way to tell a source
+ * whose EXISTING ilst will not walk from one whose chunk offsets will not rewrite.
+ * The two want opposite fixes, so the module says which. */
+enum mod_mp4_why {
+    MOD_MP4_WHY_NONE = 0,       /* it did not refuse */
+    MOD_MP4_WHY_ARGS,           /* bad arguments, or more tags than it carries */
+    MOD_MP4_WHY_MOOV_BOX,       /* the moov box header would not walk */
+    MOD_MP4_WHY_NOT_MOOV,       /* not a moov, or its size disagrees with moov_len */
+    MOD_MP4_WHY_ILST_CHILD,     /* a child of the ilst already in the file */
+    MOD_MP4_WHY_OUT_CAP,        /* the caller's buffer is too small */
+    MOD_MP4_WHY_SHIFT,          /* the stco/co64 offsets would not rewrite */
+    MOD_MP4_WHY_LANDING         /* the writer did not land on the end of the hole */
+};
+
+/* The same splice, reporting the gate. `why` and `where` may be NULL. `where` is the
+ * offset the refusal is about -- the ilst child that would not walk, or the length
+ * that did not fit -- and 0 when the gate has no offset of its own. */
+int64_t mod_mp4_add_tags_why(const uint8_t *moov, size_t moov_len,
+                             const struct mod_mp4_tag *tags, int ntags,
+                             int moov_precedes_mdat,
+                             uint8_t *out, size_t out_cap, int64_t *grew,
+                             int *why, uint64_t *where);
+
+/* A short name for one of the codes above, for a log line. Never NULL. */
+const char *mod_mp4_why_name(int why);
 
 #endif /* EP122_MOD_USBSAVE_MP4_H */
