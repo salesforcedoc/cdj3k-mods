@@ -40,6 +40,10 @@ enum ep122_sym {
     EP122_GFX_RENDERER,
     EP122_SOFT_PIXEL_DATA,
     EP122_JUCE_IMAGECOMPONENT,
+    EP122_JPEG_IMAGE_FORMAT,
+    EP122_PNG_IMAGE_FORMAT,
+    EP122_JPEG_DECODE,
+    EP122_PNG_DECODE,
     EP122_WAVEREPLY_1200PT,
     EP122_WAVEREPLY_400PT,
     EP122_WAVEREPLY_3BAND,
@@ -292,6 +296,8 @@ static const struct ep122_vt_spec {
     { EP122_GFX_RENDERER, "N4juce32LowLevelGraphicsSoftwareRendererE", NULL },   /* 0x24cc3b8 */
     { EP122_SOFT_PIXEL_DATA, "N4juce17SoftwarePixelDataE", NULL },   /* 0x24cc540 */
     { EP122_JUCE_IMAGECOMPONENT, "N4juce14ImageComponentE", "N4juce9ComponentE" },   /* 0x24e2920 */
+    { EP122_JPEG_IMAGE_FORMAT, "N4juce15JPEGImageFormatE", NULL },   /* 0x24cc6d0 */
+    { EP122_PNG_IMAGE_FORMAT, "N4juce14PNGImageFormatE", NULL },   /* 0x24cc718 */
     { EP122_WAVEREPLY_1200PT, "N15db_access_proxy22WaveformReplyer_1200PtE", NULL },   /* 0x1f36850 */
     { EP122_WAVEREPLY_400PT, "N15db_access_proxy21WaveformReplyer_400PtE", NULL },   /* 0x1f36878 */
     { EP122_WAVEREPLY_3BAND, "N15db_access_proxy21WaveformReplyer_3BandE", NULL },   /* 0x1f36828 */
@@ -360,7 +366,7 @@ static const struct ep122_vt_spec {
     { EP122_GRIDBTN_SHIFT, "N3gui18grid_adjust_button15ShiftGridButtonE", NULL },   /* 0x20c5500 */
     { EP122_GRIDBTN_RESET, "N3gui18grid_adjust_button11ResetButtonE", NULL },   /* 0x20c6560 */
 };
-#define EP122_N_VT 91
+#define EP122_N_VT 93
 
 /* ---- virtuals: whatever the slot holds IS the implementation ---- */
 static const struct ep122_slot_spec {
@@ -368,6 +374,8 @@ static const struct ep122_slot_spec {
     unsigned short vt;     /* the vtable symbol it lives in */
     unsigned short off;    /* byte offset from the address point */
 } k_ep122_slot[] = {
+    { EP122_JPEG_DECODE, EP122_JPEG_IMAGE_FORMAT, 0x28 },   /* 0x1ae9f80 */
+    { EP122_PNG_DECODE, EP122_PNG_IMAGE_FORMAT, 0x28 },   /* 0x1acbf40 */
     { EP122_READER_FLAC_OPEN, EP122_READER_FLAC, 0x10 },   /* 0xa7e518 */
     { EP122_READER_FLAC_GETRATE, EP122_READER_FLAC, 0x50 },   /* 0xa38d60 */
     { EP122_SRC_DTOR, EP122_SRC, 0x0 },   /* 0xa4bf10 */
@@ -439,7 +447,7 @@ static const struct ep122_slot_spec {
     { EP122_PLAY_RUN, EP122_PLAY_TASK, 0x10 },   /* 0x1033850 */
     { EP122_PAUSE_RUN, EP122_PAUSE_TASK, 0x10 },   /* 0x1034338 */
 };
-#define EP122_N_SLOT 70
+#define EP122_N_SLOT 72
 
 /* ---- free functions: masked aarch64 signatures ---- */
 #define EP122_SIG_INSNS_MAX 96
@@ -637,6 +645,10 @@ static const char *const k_ep122_sym_name[] = {
     "GFX_RENDERER",
     "SOFT_PIXEL_DATA",
     "JUCE_IMAGECOMPONENT",
+    "JPEG_IMAGE_FORMAT",
+    "PNG_IMAGE_FORMAT",
+    "JPEG_DECODE",
+    "PNG_DECODE",
     "WAVEREPLY_1200PT",
     "WAVEREPLY_400PT",
     "WAVEREPLY_3BAND",

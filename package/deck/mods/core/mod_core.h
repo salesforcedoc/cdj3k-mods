@@ -73,6 +73,12 @@ extern "C" {
 
 extern int g_mod_log;
 
+/* The deck's screen lamps, from its latest LED frame (see the shim's write
+ * interposer). Zero means none of the six navigation lamps is lit -- which, on this
+ * deck, means the play screen is in front. Bit 0 source, 1 browse, 2 tag list,
+ * 3 playlist, 8 search, 9 menu. */
+extern int g_panel_lamps;
+
 /* True when `lvl` would be printed. For guarding work that only exists to be logged --
  * a census, a dump, a snapshot -- so the cost goes away with the line. */
 #define MLOG_AT(lvl) (g_mod_log >= (lvl))

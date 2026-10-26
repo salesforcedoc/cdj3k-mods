@@ -218,6 +218,10 @@ static void wrap_setfill(void *ctx, const void *fill)
             mod_stem_audio_report();
             mod_stem_decode_report();
             mod_usbsave_pump();
+            /* The image-decoder probe reports from here and nowhere else. It must not
+             * write to the console from the decode path itself: that path is inside a
+             * startup retry loop whose outcome a console write changes. */
+            theme_decode_report();
             theme_memo_report();
             /* Cheap enough to sit here: eight word compares per table, and nothing
              * written unless one has gone stock. This is what carries a theme switch

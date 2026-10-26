@@ -315,6 +315,16 @@ static int et_screen_now(void)
 
 static int et_on_performance_screen(void)
 {
+    /* THE LAMPS FIRST, and they are the DJ's own observation: the deck lights SOURCE,
+     * BROWSE, TAG LIST, PLAYLIST, SEARCH and MENU because it IS on that screen, so any
+     * of them lit means the play screen is not in front. That is a state rather than a
+     * timestamp, with none of the bias the paint comparison below suffers from (the
+     * browse list repaints far more often than the waveform, so it wins recency too
+     * often). Zero lamps also means the frame never reached us, in which case the
+     * fallback runs and nothing is worse than before. */
+    if (g_panel_lamps)
+        return 0;
+
     int which = et_screen_now();
 
     return which < 0 || which == 0;
@@ -323,6 +333,20 @@ static int et_on_performance_screen(void)
 /* Called for every panel frame EP122 reads, so the idle path is one compare. */
 void panel_frame(uint8_t *buf, size_t len)
 {
+    /* The screen lamps as they change, logged ON CHANGE ONLY. That guard is what
+     * makes this safe on a per-frame path: the deck sends a whole LED frame every
+     * update, but the six navigation lamps only move when a screen changes, so this
+     * prints a handful of lines a session rather than one per frame -- which is the
+     * mistake that hung the guest earlier. */
+    {
+        static int prev = -1;
+
+        if (g_panel_lamps != prev) {
+            prev = g_panel_lamps;
+            MDBG("endtrack: screen lamps %#x\n", g_panel_lamps);
+        }
+    }
+
     int64_t t;
     int stage = -1, changed = 0;
     uint16_t rot;
@@ -351,7 +375,9 @@ void panel_frame(uint8_t *buf, size_t len)
         if (stage == 1 && et_stage != 1) {
             int which = et_screen_now();
 
-            MDBG("endtrack: screen check: painted last %s %ldms ago -> %s\n",
+            MDBG("endtrack: screen check: lamps %#x, painted last %s %ldms ago "
+                 "-> %s\n",
+                 g_panel_lamps,
                  which < 0 ? "nothing" : et_g_screen_name[which],
                  which < 0 ? -1L : et_screen_age_ms(which),
                  et_on_performance_screen() ? "pressing" : "not pressing");

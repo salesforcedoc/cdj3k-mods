@@ -126,6 +126,33 @@ vtable SOFT_PIXEL_DATA    class=N4juce17SoftwarePixelDataE
 # vtable, which is where paint lives.
 vtable JUCE_IMAGECOMPONENT class=N4juce14ImageComponentE base=N4juce9ComponentE
 
+# juce::ImageFileFormat's two decoders -- the one place the ENCODED bytes of a cover
+# are still whole. The deck fetches artwork over HTTPS and never writes it to disk
+# (measured 2026-10-16: the whole userdata partition holds no .jpg/.png at all and
+# Beatport/Artwork/ is empty), so the draw path's 320x240 and 90x90 copies are the
+# only pixels anything downstream ever sees. decodeImage receives the stream the
+# original arrived on.
+#
+# WHICH slot: decodeImage is the only virtual here that returns an object, and it
+# writes that object through x8 -- the indirect result register -- storing fields
+# out to +0x68 and returning that pointer in x0. getFormatName (+0x20) is the only
+# other slot that touches x8, and it is recognisable by the "JPEG" literal it
+# loads. writeImageToStream (+0x40) takes three register arguments (this, Image&,
+# OutputStream&) and returns a scalar, so it is not the one.
+#
+# The returned object is NOT upstream juce::Image (8 bytes), and this build's
+# juce::String is 8 bytes while its getFormatName still returns through x8 -- so
+# the return-type question is left open on purpose rather than guessed at. A mod
+# hooking these slots must therefore not declare a C prototype for them: it
+# forwards x0/x1/x8/x30 itself and tail-branches, which is right whatever the
+# return type turns out to be. See mods/theme/decode.c.
+# Offsets are from the RTTI ADDRESS POINT (vtable+0x10, the first code slot), not
+# from the vtable head: decodeImage sits at vtable+0x38, so it reads +0x28 here.
+vtable JPEG_IMAGE_FORMAT class=N4juce15JPEGImageFormatE
+vtable PNG_IMAGE_FORMAT  class=N4juce14PNGImageFormatE
+slot   JPEG_DECODE       vtable=JPEG_IMAGE_FORMAT off=0x28
+slot   PNG_DECODE        vtable=PNG_IMAGE_FORMAT  off=0x28
+
 # The overview waveform is BAKED, not painted: on the database reply thread, once per
 # track, each of these renders the point data into an offscreen juce::Image which the
 # widget then simply blits. That is why no amount of paint-time probing ever found it --

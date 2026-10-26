@@ -404,6 +404,33 @@ void theme_wave_ground_fill(void *data, int32_t w, int32_t h,
 #define THEME_SLOT_FILLPATH     (24 * 8)   /* fillPath(Path&, transform)   */
 
 
+/* ---- the image-decoder probe (decode.c) ----
+ *
+ * Diagnostic, and the only thing in the theme mod that exists to answer a question
+ * rather than to draw something. It hooks juce::ImageFileFormat's decoders to see a
+ * cover while it is still whole: the deck fetches artwork over HTTPS and never puts
+ * it on disk, so the decoder is the one place the original bytes exist. The probe
+ * RECORDS from the decode path and says nothing there; this is the report, called
+ * from the throttled setFill tick. decode.c carries why logging from the decode path
+ * itself cost the guest a boot loop. */
+void theme_decode_report(void);
+
+/* The cover the deck fetched for the track it is on, as it arrived: the encoded
+ * bytes, with their format and dimensions. Public because USB Save embeds it in the
+ * file it writes -- this is the real artwork, where the drawn bitmap it used before
+ * was sometimes a badge. `bytes` points at the module's own copy and is good until
+ * the next cover is captured, so copy anything kept past the call. 0 when nothing has
+ * been captured, in which case a caller keeps its own fallback. */
+int theme_decoded_cover(const uint8_t **bytes, size_t *len, int *fmt,
+                        int32_t *w, int32_t *h);
+
+/* How long ago that cover was captured, in seconds, or -1 when there is none. The
+ * accessor above answers "may I write this into the track being saved"; this answers
+ * the other half -- "is this capture young enough to be evidence about which release
+ * it came from" -- which USB Save asks before it keeps one for the rest of the boot. */
+long theme_decoded_cover_age(void);
+
+
 #ifdef __cplusplus
 }
 #endif
